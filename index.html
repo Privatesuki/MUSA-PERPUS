@@ -23,14 +23,18 @@
 
     <style>
         :root {
-            --bg: #0a0f1e;
-            --ink: #e2e8f0;
-            --muted: #94a3b8;
-            --glass: rgba(255, 255, 255, .06);
-            --glass-strong: rgba(255, 255, 255, .10);
-            --line: rgba(255, 255, 255, .12);
-            --brand: #6366f1;
-            --brand2: #22d3ee;
+            --bg: #f3f8f4;
+            --ink: #0f2a1d;
+            --muted: #5f7468;
+            --glass: rgba(255, 255, 255, .78);
+            --line: rgba(21, 83, 45, .14);
+            --g900: #0f3d24;
+            --g800: #14532d;
+            --g700: #166534;
+            --g600: #15803d;
+            --g500: #16a34a;
+            --g100: #dcfce7;
+            --g50: #f0fdf4;
         }
         * { -webkit-tap-highlight-color: transparent; }
         html { scroll-behavior: smooth; }
@@ -42,109 +46,118 @@
             overflow-x: hidden;
         }
 
-        /* ---------- Latar aurora ---------- */
+        /* ---------- Latar lembut hijau-putih ---------- */
         .aurora { position: fixed; inset: 0; z-index: -1; overflow: hidden; background:
-            radial-gradient(1200px 600px at 10% -10%, rgba(99,102,241,.18), transparent 60%),
-            radial-gradient(900px 500px at 100% 10%, rgba(34,211,238,.12), transparent 60%),
-            var(--bg); }
-        .blob { position: absolute; border-radius: 50%; filter: blur(80px); opacity: .45; will-change: transform; }
-        .blob.b1 { width: 420px; height: 420px; background: #6366f1; top: -120px; left: -100px; animation: float1 22s ease-in-out infinite; }
-        .blob.b2 { width: 380px; height: 380px; background: #22d3ee; bottom: -140px; right: -80px; animation: float2 26s ease-in-out infinite; }
-        .blob.b3 { width: 300px; height: 300px; background: #a855f7; top: 40%; left: 55%; opacity: .25; animation: float3 30s ease-in-out infinite; }
+            radial-gradient(1100px 560px at 8% -10%, rgba(134,239,172,.35), transparent 60%),
+            radial-gradient(900px 500px at 100% 5%, rgba(190,242,100,.22), transparent 60%),
+            linear-gradient(180deg, #f8fcf9, var(--bg)); }
+        .blob { position: absolute; border-radius: 50%; filter: blur(90px); opacity: .4; will-change: transform; }
+        .blob.b1 { width: 420px; height: 420px; background: #86efac; top: -120px; left: -100px; animation: float1 24s ease-in-out infinite; }
+        .blob.b2 { width: 380px; height: 380px; background: #bef264; bottom: -140px; right: -80px; opacity: .3; animation: float2 28s ease-in-out infinite; }
+        .blob.b3 { width: 300px; height: 300px; background: #6ee7b7; top: 40%; left: 55%; opacity: .25; animation: float3 32s ease-in-out infinite; }
         @keyframes float1 { 50% { transform: translate(120px, 90px) scale(1.15); } }
         @keyframes float2 { 50% { transform: translate(-140px, -80px) scale(1.1); } }
         @keyframes float3 { 50% { transform: translate(-90px, 70px) scale(.9); } }
 
-        /* ---------- Glassmorphism ---------- */
+        /* ---------- Glassmorphism terang ---------- */
         .glass {
             background: var(--glass);
             border: 1px solid var(--line);
-            backdrop-filter: blur(16px) saturate(140%);
-            -webkit-backdrop-filter: blur(16px) saturate(140%);
-            box-shadow: 0 10px 40px -12px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.08);
+            backdrop-filter: blur(14px) saturate(150%);
+            -webkit-backdrop-filter: blur(14px) saturate(150%);
+            box-shadow: 0 10px 30px -14px rgba(20,83,45,.28), inset 0 1px 0 rgba(255,255,255,.95);
             border-radius: 1.25rem;
         }
         .glass-hover { transition: transform .35s cubic-bezier(.2,.8,.2,1), box-shadow .35s, border-color .35s; }
-        .glass-hover:hover { transform: translateY(-4px); border-color: rgba(129,140,248,.5); box-shadow: 0 18px 50px -14px rgba(99,102,241,.45); }
+        .glass-hover:hover { transform: translateY(-4px); border-color: rgba(22,163,74,.55); box-shadow: 0 18px 40px -14px rgba(22,163,74,.38); }
 
         /* ---------- Tombol & input ---------- */
         .btn { display: inline-flex; align-items: center; justify-content: center; gap: .5rem; padding: .6rem 1rem; border-radius: .85rem;
-            font-size: .82rem; font-weight: 700; transition: transform .2s, background .2s, box-shadow .2s, opacity .2s; white-space: nowrap; }
+            font-size: .82rem; font-weight: 700; transition: transform .2s, background .2s, box-shadow .2s, opacity .2s; white-space: nowrap; border: 1px solid transparent; }
         .btn:hover { transform: translateY(-1px); }
         .btn:active { transform: scale(.97); }
-        .btn:disabled { opacity: .45; pointer-events: none; }
-        .btn-primary { background: linear-gradient(135deg, #6366f1, #22d3ee); color: #06101f; box-shadow: 0 8px 24px -8px rgba(99,102,241,.7); }
-        .btn-ghost { background: var(--glass-strong); border: 1px solid var(--line); color: var(--ink); }
-        .btn-ghost:hover { background: rgba(255,255,255,.16); }
-        .btn-green { background: rgba(52,211,153,.16); border: 1px solid rgba(52,211,153,.4); color: #6ee7b7; }
-        .btn-amber { background: rgba(251,191,36,.14); border: 1px solid rgba(251,191,36,.4); color: #fcd34d; }
-        .btn-red { background: rgba(248,113,113,.14); border: 1px solid rgba(248,113,113,.4); color: #fca5a5; }
+        .btn:disabled { opacity: .5; pointer-events: none; }
+        .btn-primary { background: linear-gradient(135deg, #14532d, #15803d); color: #fff; box-shadow: 0 8px 22px -8px rgba(21,128,61,.65); }
+        .btn-primary:hover { box-shadow: 0 12px 26px -8px rgba(21,128,61,.8); }
+        .btn-ghost { background: #fff; border-color: var(--line); color: var(--g800); }
+        .btn-ghost:hover { background: var(--g50); border-color: rgba(22,163,74,.4); }
+        .btn-green { background: var(--g100); border-color: #86efac; color: var(--g800); }
+        .btn-green:hover { background: #bbf7d0; }
+        .btn-amber { background: #fef3c7; border-color: #fcd34d; color: #92400e; }
+        .btn-amber:hover { background: #fde68a; }
+        .btn-red { background: #fee2e2; border-color: #fca5a5; color: #991b1b; }
+        .btn-red:hover { background: #fecaca; }
+        .btn-light { background: #fff; color: var(--g800); box-shadow: 0 8px 22px -10px rgba(0,0,0,.5); }
+        .btn-light:hover { background: #ecfdf5; }
+        .btn-onhero { background: rgba(255,255,255,.16); border-color: rgba(255,255,255,.4); color: #fff; backdrop-filter: blur(6px); }
+        .btn-onhero:hover { background: rgba(255,255,255,.28); }
         .btn-sm { padding: .35rem .6rem; font-size: .72rem; border-radius: .6rem; }
 
-        .field { width: 100%; background: rgba(255,255,255,.06); border: 1px solid var(--line); border-radius: .85rem; padding: .65rem .9rem;
+        .field { width: 100%; background: #fff; border: 1px solid rgba(21,83,45,.2); border-radius: .85rem; padding: .65rem .9rem;
             font-size: .85rem; color: var(--ink); outline: none; transition: border-color .2s, box-shadow .2s, background .2s; }
-        .field::placeholder { color: #64748b; }
-        .field:focus { border-color: #818cf8; box-shadow: 0 0 0 4px rgba(99,102,241,.22); background: rgba(255,255,255,.09); }
-        .field[readonly] { opacity: .6; }
-        select.field option { background: #131a2e; color: var(--ink); }
+        .field::placeholder { color: #9ab0a2; }
+        .field:focus { border-color: var(--g500); box-shadow: 0 0 0 4px rgba(22,163,74,.18); }
+        .field[readonly] { background: #f1f5f2; color: var(--muted); }
+        select.field option { background: #fff; color: var(--ink); }
         .lbl { display: block; font-size: .68rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin-bottom: .35rem; }
 
         /* ---------- Navigasi ---------- */
         .nav-pill { display: inline-flex; align-items: center; gap: .5rem; padding: .55rem 1rem; border-radius: 999px; font-size: .82rem; font-weight: 700;
-            color: var(--muted); transition: color .2s, background .2s; white-space: nowrap; }
-        .nav-pill:hover { color: #fff; background: rgba(255,255,255,.08); }
-        .nav-pill.active { color: #06101f; background: linear-gradient(135deg, #818cf8, #22d3ee); box-shadow: 0 6px 20px -6px rgba(99,102,241,.8); }
+            color: #3f5a4a; transition: color .2s, background .2s, box-shadow .2s; white-space: nowrap; }
+        .nav-pill:hover { color: var(--g800); background: var(--g100); }
+        .nav-pill.active { color: #fff; background: linear-gradient(135deg, #14532d, #15803d); box-shadow: 0 8px 18px -8px rgba(21,128,61,.8); }
 
         /* ---------- Tabel ---------- */
         .tbl { width: 100%; border-collapse: collapse; font-size: .82rem; }
-        .tbl thead th { position: sticky; top: 0; z-index: 1; background: rgba(20,28,52,.92); backdrop-filter: blur(8px);
-            padding: .8rem .9rem; text-align: left; font-size: .68rem; letter-spacing: .07em; text-transform: uppercase; color: var(--muted); font-weight: 700; white-space: nowrap; }
-        .tbl tbody td { padding: .7rem .9rem; border-top: 1px solid rgba(255,255,255,.06); }
-        .tbl tbody tr { transition: background .2s, transform .2s; }
-        .tbl tbody tr:hover { background: rgba(129,140,248,.10); }
+        .tbl thead th { position: sticky; top: 0; z-index: 1; background: #14532d; color: #ecfdf5;
+            padding: .8rem .9rem; text-align: left; font-size: .68rem; letter-spacing: .07em; text-transform: uppercase; font-weight: 700; white-space: nowrap; }
+        .tbl tbody td { padding: .7rem .9rem; border-top: 1px solid rgba(21,83,45,.08); }
+        .tbl tbody tr { transition: background .2s; }
+        .tbl tbody tr:hover { background: rgba(22,163,74,.08); }
         .tbl tbody tr.row-in { animation: rowIn .35s ease both; }
         @keyframes rowIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
 
         /* ---------- Badge ---------- */
         .badge { display: inline-flex; align-items: center; gap: .35rem; padding: .2rem .6rem; border-radius: 999px; font-size: .7rem; font-weight: 700; border: 1px solid transparent; }
-        .b-ok   { background: rgba(52,211,153,.14);  color: #6ee7b7; border-color: rgba(52,211,153,.35); }
-        .b-warn { background: rgba(251,191,36,.14);  color: #fcd34d; border-color: rgba(251,191,36,.35); }
-        .b-bad  { background: rgba(248,113,113,.14); color: #fca5a5; border-color: rgba(248,113,113,.35); }
-        .b-info { background: rgba(96,165,250,.14);  color: #93c5fd; border-color: rgba(96,165,250,.35); }
+        .b-ok   { background: #dcfce7; color: #166534; border-color: #86efac; }
+        .b-warn { background: #fef3c7; color: #92400e; border-color: #fcd34d; }
+        .b-bad  { background: #fee2e2; color: #991b1b; border-color: #fca5a5; }
+        .b-info { background: #e0f2fe; color: #075985; border-color: #bae6fd; }
+        .b-hero { background: rgba(255,255,255,.18); color: #fff; border-color: rgba(255,255,255,.35); backdrop-filter: blur(6px); }
         .pulse-soft { animation: pulseSoft 2.2s ease-in-out infinite; }
-        @keyframes pulseSoft { 0%,100% { opacity: 1; box-shadow: 0 0 0 0 rgba(251,191,36,.35); } 50% { opacity: .6; box-shadow: 0 0 0 6px rgba(251,191,36,0); } }
-        .dot-live { width: .5rem; height: .5rem; border-radius: 50%; background: #34d399; box-shadow: 0 0 0 0 rgba(52,211,153,.6); animation: ping 1.8s infinite; }
-        @keyframes ping { 70% { box-shadow: 0 0 0 8px rgba(52,211,153,0); } 100% { box-shadow: 0 0 0 0 rgba(52,211,153,0); } }
+        @keyframes pulseSoft { 0%,100% { opacity: 1; box-shadow: 0 0 0 0 rgba(245,158,11,.35); } 50% { opacity: .7; box-shadow: 0 0 0 6px rgba(245,158,11,0); } }
+        .dot-live { width: .5rem; height: .5rem; border-radius: 50%; background: #4ade80; box-shadow: 0 0 0 0 rgba(74,222,128,.7); animation: ping 1.8s infinite; }
+        @keyframes ping { 70% { box-shadow: 0 0 0 8px rgba(74,222,128,0); } 100% { box-shadow: 0 0 0 0 rgba(74,222,128,0); } }
 
         /* ---------- Halaman & modal ---------- */
         .page { animation: pageIn .45s cubic-bezier(.2,.8,.2,1) both; }
         @keyframes pageIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
-        .modal-wrap { position: fixed; inset: 0; z-index: 80; background: rgba(4,8,20,.7); backdrop-filter: blur(6px); display: none; align-items: center; justify-content: center; padding: 1rem; }
+        .modal-wrap { position: fixed; inset: 0; z-index: 80; background: rgba(15,42,29,.45); backdrop-filter: blur(5px); display: none; align-items: center; justify-content: center; padding: 1rem; }
         .modal-wrap.open { display: flex; animation: fade .2s ease both; }
-        .modal-card { width: 100%; max-height: 92vh; overflow-y: auto; background: rgba(17,24,44,.92); animation: pop .3s cubic-bezier(.2,.9,.3,1.2) both; }
+        .modal-card { width: 100%; max-height: 92vh; overflow-y: auto; background: #fff !important; animation: pop .3s cubic-bezier(.2,.9,.3,1.2) both; box-shadow: 0 30px 70px -20px rgba(15,61,36,.5); }
         @keyframes fade { from { opacity: 0; } }
         @keyframes pop { from { opacity: 0; transform: translateY(16px) scale(.96); } }
 
         /* ---------- Toast ---------- */
         #toastWrap { position: fixed; top: 1rem; right: 1rem; z-index: 200; display: flex; flex-direction: column; gap: .6rem; width: min(92vw, 360px); }
-        .toast { display: flex; gap: .7rem; align-items: flex-start; padding: .8rem 1rem; border-radius: 1rem; font-size: .82rem; font-weight: 600;
-            background: rgba(17,24,44,.95); border: 1px solid var(--line); box-shadow: 0 16px 40px -12px rgba(0,0,0,.7);
+        .toast { display: flex; gap: .7rem; align-items: flex-start; padding: .8rem 1rem; border-radius: 1rem; font-size: .82rem; font-weight: 600; color: var(--ink);
+            background: #fff; border: 1px solid var(--line); border-left-width: 4px; box-shadow: 0 16px 36px -14px rgba(15,61,36,.45);
             animation: toastIn .4s cubic-bezier(.2,.9,.3,1.2) both; }
         .toast.out { animation: toastOut .3s ease both; }
         .toast i { margin-top: .1rem; }
-        .toast.ok { border-color: rgba(52,211,153,.5); } .toast.ok i { color: #34d399; }
-        .toast.err { border-color: rgba(248,113,113,.5); } .toast.err i { color: #f87171; }
-        .toast.info { border-color: rgba(96,165,250,.5); } .toast.info i { color: #60a5fa; }
+        .toast.ok { border-left-color: #16a34a; } .toast.ok i { color: #16a34a; }
+        .toast.err { border-left-color: #dc2626; } .toast.err i { color: #dc2626; }
+        .toast.info { border-left-color: #0284c7; } .toast.info i { color: #0284c7; }
         @keyframes toastIn { from { opacity: 0; transform: translateX(40px) scale(.95); } }
         @keyframes toastOut { to { opacity: 0; transform: translateX(40px) scale(.95); } }
 
         /* ---------- Kursor kustom ---------- */
         .cur-dot, .cur-ring { position: fixed; top: 0; left: 0; pointer-events: none; z-index: 9999; border-radius: 50%; opacity: 0; transition: opacity .25s; will-change: transform; }
-        .cur-dot { width: 7px; height: 7px; margin: -3.5px 0 0 -3.5px; background: #22d3ee; box-shadow: 0 0 12px 2px rgba(34,211,238,.8); }
-        .cur-ring { width: 38px; height: 38px; margin: -19px 0 0 -19px; border: 1.5px solid rgba(129,140,248,.7);
-            box-shadow: 0 0 22px rgba(99,102,241,.35), inset 0 0 14px rgba(99,102,241,.2);
+        .cur-dot { width: 7px; height: 7px; margin: -3.5px 0 0 -3.5px; background: #16a34a; box-shadow: 0 0 10px 2px rgba(22,163,74,.55); }
+        .cur-ring { width: 38px; height: 38px; margin: -19px 0 0 -19px; border: 1.5px solid rgba(21,128,61,.7);
+            box-shadow: 0 0 18px rgba(22,163,74,.25), inset 0 0 12px rgba(22,163,74,.15);
             transition: width .25s, height .25s, margin .25s, background .25s, border-color .25s, opacity .25s; }
-        .cur-ring.hover { width: 60px; height: 60px; margin: -30px 0 0 -30px; background: rgba(99,102,241,.14); border-color: #22d3ee; }
+        .cur-ring.hover { width: 60px; height: 60px; margin: -30px 0 0 -30px; background: rgba(22,163,74,.12); border-color: #14532d; }
         .cur-ring.press { width: 26px; height: 26px; margin: -13px 0 0 -13px; }
         body.cursor-on .cur-dot, body.cursor-on .cur-ring { opacity: 1; }
         body.cursor-on.cur-text .cur-dot, body.cursor-on.cur-text .cur-ring { opacity: 0; }
@@ -154,17 +167,56 @@
         }
         @media (hover: none), (pointer: coarse) { .cur-dot, .cur-ring { display: none; } }
 
-        /* ---------- Hero ---------- */
-        .hero-bg { background-size: cover; background-position: center; }
-        .caret { display: inline-block; width: 3px; height: 1.05em; background: #22d3ee; margin-left: 4px; vertical-align: -.15em; animation: blink 1s steps(1) infinite; }
+        /* ---------- Hero slideshow ---------- */
+        .hero-slide { position: absolute; inset: 0; background-size: cover; background-position: center; opacity: 0; transform: scale(1.1);
+            transition: opacity 1.4s ease, transform 7s ease-out; }
+        .hero-slide.active { opacity: 1; transform: scale(1); }
+        .hero-dot { width: 8px; height: 8px; border-radius: 999px; background: rgba(255,255,255,.5); transition: width .3s, background .3s; }
+        .hero-dot.active { width: 26px; background: #fff; }
+        .hero-arrow { width: 36px; height: 36px; border-radius: 50%; background: rgba(255,255,255,.18); border: 1px solid rgba(255,255,255,.4); color: #fff;
+            display: inline-flex; align-items: center; justify-content: center; backdrop-filter: blur(6px); transition: background .2s, transform .2s; }
+        .hero-arrow:hover { background: rgba(255,255,255,.34); transform: scale(1.08); }
+        .caret { display: inline-block; width: 3px; height: 1.05em; background: #bbf7d0; margin-left: 4px; vertical-align: -.15em; animation: blink 1s steps(1) infinite; }
         @keyframes blink { 50% { opacity: 0; } }
-        .grad-text { background: linear-gradient(90deg, #a5b4fc, #67e8f9, #86efac); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .grad-text { background: linear-gradient(90deg, #ffffff, #bbf7d0, #fde68a); -webkit-background-clip: text; background-clip: text; color: transparent; }
 
-        .skeleton { background: linear-gradient(90deg, rgba(255,255,255,.04), rgba(255,255,255,.12), rgba(255,255,255,.04)); background-size: 200% 100%; animation: shimmer 1.4s infinite; border-radius: .6rem; }
-        @keyframes shimmer { to { background-position: -200% 0; } }
+        /* ---------- Combobox kelas ---------- */
+        .cb-list { position: absolute; z-index: 30; left: 0; right: 0; top: calc(100% + 4px); max-height: 250px; overflow-y: auto; background: #fff;
+            border: 1px solid var(--line); border-radius: .85rem; box-shadow: 0 16px 36px -14px rgba(15,61,36,.45); padding: .3rem; }
+        .cb-item { padding: .6rem .8rem; border-radius: .6rem; font-size: .85rem; font-weight: 600; cursor: pointer; color: var(--ink); }
+        .cb-item.on, .cb-item:hover { background: var(--g100); color: var(--g800); }
+        .cb-item.custom { color: var(--muted); font-weight: 500; }
+
+        /* ---------- Status klik (dipinjam -> dikembalikan) ---------- */
+        .status-btn { display: inline-flex; align-items: center; gap: .4rem; padding: .35rem .75rem; border-radius: 999px; font-size: .72rem; font-weight: 700;
+            background: #fef3c7; color: #92400e; border: 1px solid #fcd34d; transition: background .2s, color .2s, border-color .2s, transform .15s; }
+        .status-btn:hover { background: #dcfce7; color: #166534; border-color: #86efac; transform: translateY(-1px); }
+        .status-btn:active { transform: scale(.96); }
+
+        /* ---------- Statistik kelas ---------- */
+        .bar-track { height: .6rem; border-radius: 999px; background: #e7efe9; overflow: hidden; }
+        .bar-fill { height: 100%; border-radius: 999px; background: linear-gradient(90deg, #15803d, #4ade80); transition: width .9s cubic-bezier(.2,.8,.2,1); }
+
+        /* ---------- Responsif: HP, iPad, desktop ---------- */
+        body { min-height: 100vh; min-height: 100dvh; }
+        .modal-card { max-height: 92vh; max-height: 92dvh; }
+        @media (max-width: 1023px) { .field, select.field { font-size: 16px; } }          /* cegah zoom otomatis iOS */
+        @media (pointer: coarse) { .btn { min-height: 42px; } .btn-sm { min-height: 38px; padding: .45rem .75rem; } .nav-pill { padding: .65rem 1rem; } }
+        @media (max-width: 767px) {
+            #toastWrap { left: .75rem; right: .75rem; top: .75rem; width: auto; }
+            .tbl-cards thead { display: none; }
+            .tbl-cards, .tbl-cards tbody { display: block; width: 100%; }
+            .tbl-cards tr { display: block; margin: .6rem; padding: .35rem 0; border: 1px solid var(--line); border-radius: 1rem; background: #fff; }
+            .tbl-cards tbody tr:hover { background: #fff; }
+            .tbl-cards td { display: flex; justify-content: space-between; align-items: center; gap: 1rem; padding: .4rem .9rem; border: 0 !important; text-align: right !important; max-width: none !important; white-space: normal !important; }
+            .tbl-cards td::before { content: attr(data-label); flex: none; text-align: left; font-size: .65rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+            .tbl-cards td[data-label="No"] { display: none; }
+            .tbl-cards td[colspan] { display: block; text-align: center !important; }
+            .tbl-cards td[colspan]::before { content: none; }
+        }
 
         ::-webkit-scrollbar { width: 9px; height: 9px; }
-        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,.16); border-radius: 999px; }
+        ::-webkit-scrollbar-thumb { background: rgba(21,83,45,.25); border-radius: 999px; }
         ::-webkit-scrollbar-track { background: transparent; }
 
         @media (prefers-reduced-motion: reduce) {
@@ -188,12 +240,12 @@
     <header class="sticky top-0 z-40 px-3 sm:px-6 pt-3">
         <div class="glass max-w-7xl mx-auto px-3 sm:px-5 py-2.5 flex items-center gap-3 sm:gap-5">
             <a href="#dashboard" class="flex items-center gap-3 shrink-0" data-nav="dashboard">
-                <span class="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center overflow-hidden">
-                    <img src="./assets/img/logo.png" alt="Logo" class="w-full h-full object-contain" onerror="this.replaceWith(Object.assign(document.createElement('i'),{className:'fa-solid fa-book-open text-indigo-300'}))">
+                <span class="w-10 h-10 rounded-xl bg-white border border-emerald-900/10 flex items-center justify-center overflow-hidden">
+                    <img src="./assets/img/logo.png" alt="Logo" class="w-full h-full object-contain" onerror="this.replaceWith(Object.assign(document.createElement('i'),{className:'fa-solid fa-book-open text-emerald-700'}))">
                 </span>
                 <span class="leading-tight hidden sm:block">
-                    <span class="block font-extrabold tracking-tight">MUSA PERPUS</span>
-                    <span class="block text-[10px] text-slate-400">SMK Muhammadiyah 1 Pringsewu</span>
+                    <span class="block font-extrabold tracking-tight text-emerald-950">MUSA PERPUS</span>
+                    <span class="block text-[10px] text-slate-500">SMK Muhammadiyah 1 Pringsewu</span>
                 </span>
             </a>
 
@@ -202,6 +254,7 @@
                 <a href="#inventaris" class="nav-pill" data-nav="inventaris"><i class="fa-solid fa-barcode"></i><span>Inventaris</span></a>
                 <a href="#peminjaman" class="nav-pill" data-nav="peminjaman"><i class="fa-solid fa-book-reader"></i><span>Peminjaman</span></a>
                 <a href="#pengajuan"  class="nav-pill" data-nav="pengajuan"><i class="fa-solid fa-clipboard-list"></i><span>Pengajuan</span></a>
+                <a href="#cetak"      class="nav-pill" data-nav="cetak"><i class="fa-solid fa-print"></i><span>Cetak Punggung</span></a>
             </nav>
 
             <div class="flex items-center gap-2 shrink-0">
@@ -216,35 +269,42 @@
         <!-- ================= DASHBOARD ================= -->
         <section id="page-dashboard" class="page space-y-6">
             <div class="grid lg:grid-cols-3 gap-5">
-                <div id="heroBanner" class="lg:col-span-2 relative overflow-hidden rounded-[1.75rem] min-h-[280px] p-7 sm:p-9 flex flex-col justify-between hero-bg border border-white/10 shadow-2xl"
-                     style="background-image:url('assets/img/kayu.jpeg')">
-                    <div class="absolute inset-0 bg-gradient-to-br from-[#0a0f1e]/90 via-[#0a0f1e]/70 to-indigo-900/60"></div>
-                    <div class="absolute -right-10 -top-10 w-52 h-52 rounded-full bg-cyan-400/20 blur-3xl"></div>
+                <div id="heroBanner" class="lg:col-span-2 relative overflow-hidden rounded-[1.75rem] min-h-[300px] p-7 sm:p-9 flex flex-col justify-between text-white shadow-xl shadow-emerald-900/20"
+                     style="background:linear-gradient(135deg,#14532d,#166534 55%,#15803d)">
+                    <div id="heroSlides" class="absolute inset-0"></div>
+                    <div class="absolute inset-0" style="background:linear-gradient(180deg,rgba(0,0,0,.18) 0%,rgba(0,0,0,0) 35%,rgba(0,0,0,.6) 100%)"></div>
                     <div class="relative">
-                        <span class="badge b-info"><span class="dot-live"></span> Ruang Manajemen Digital</span>
-                        <h1 class="mt-5 text-3xl sm:text-4xl font-extrabold leading-tight tracking-tight min-h-[5.5rem] sm:min-h-[6.5rem]">
+                        <span class="badge b-hero"><span class="dot-live"></span> Ruang Manajemen Digital</span>
+                        <h1 class="mt-5 text-3xl sm:text-4xl font-extrabold leading-tight tracking-tight min-h-[5.5rem] sm:min-h-[6.5rem] drop-shadow">
                             <span id="typingText" class="grad-text"></span><span class="caret"></span>
                         </h1>
-                        <p class="mt-3 text-sm text-slate-300 max-w-lg leading-relaxed">
+                        <p class="mt-3 text-sm text-emerald-50/90 max-w-lg leading-relaxed">
                             Kelola inventaris, pantau peminjaman, dan ajukan buku baru dalam satu dashboard yang terhubung langsung ke database.
                         </p>
                     </div>
-                    <div class="relative mt-6 flex flex-wrap gap-3">
-                        <a href="#inventaris" data-nav="inventaris" class="btn btn-primary">Jelajahi Inventaris <i class="fa-solid fa-arrow-right text-xs"></i></a>
-                        <a href="#peminjaman" data-nav="peminjaman" class="btn btn-ghost">Catat Peminjaman</a>
+                    <div class="relative mt-6 flex flex-wrap items-end justify-between gap-4">
+                        <div class="flex flex-wrap gap-3">
+                            <a href="#inventaris" data-nav="inventaris" class="btn btn-light">Jelajahi Inventaris <i class="fa-solid fa-arrow-right text-xs"></i></a>
+                            <a href="#peminjaman" data-nav="peminjaman" class="btn btn-onhero">Catat Peminjaman</a>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <button id="heroPrev" class="hero-arrow" aria-label="Sebelumnya"><i class="fa-solid fa-chevron-left text-xs"></i></button>
+                            <div id="heroDots" class="flex items-center gap-1.5"></div>
+                            <button id="heroNext" class="hero-arrow" aria-label="Berikutnya"><i class="fa-solid fa-chevron-right text-xs"></i></button>
+                        </div>
                     </div>
                 </div>
 
                 <div class="glass p-6 flex flex-col justify-between">
                     <div class="flex items-start justify-between">
-                        <span class="w-12 h-12 rounded-2xl bg-indigo-500/20 text-indigo-300 flex items-center justify-center"><i class="fa-solid fa-clock text-xl"></i></span>
+                        <span class="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center"><i class="fa-solid fa-clock text-xl"></i></span>
                         <span id="openBadge" class="badge b-ok pulse-soft">Buka Sekarang</span>
                     </div>
                     <div>
                         <p class="lbl mt-6">Layanan Perpustakaan</p>
-                        <p class="text-2xl font-extrabold">07:30 – 15:30 WIB</p>
-                        <div class="h-px bg-white/10 my-3"></div>
-                        <p class="text-xs text-slate-400 flex items-center gap-2"><i class="fa-solid fa-circle-info text-cyan-300"></i> Istirahat 12:00 – 13:00 WIB (kecuali Jumat)</p>
+                        <p class="text-2xl font-extrabold text-emerald-950">07:30 – 15:30 WIB</p>
+                        <div class="h-px bg-emerald-900/10 my-3"></div>
+                        <p class="text-xs text-slate-500 flex items-center gap-2"><i class="fa-solid fa-circle-info text-emerald-600"></i> Istirahat 12:00 – 13:00 WIB (kecuali Jumat)</p>
                     </div>
                 </div>
             </div>
@@ -252,48 +312,58 @@
             <!-- Statistik -->
             <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
                 <div class="glass glass-hover p-5">
-                    <div class="flex items-center justify-between"><p class="lbl !mb-0">Total Buku</p><i class="fa-solid fa-book text-indigo-300"></i></div>
-                    <p id="st-judul" class="text-3xl sm:text-4xl font-extrabold mt-3 tabular-nums">0</p>
-                    <p class="text-[11px] text-slate-400 mt-1">judul berbeda</p>
+                    <div class="flex items-center justify-between"><p class="lbl !mb-0">Total Buku</p><span class="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center"><i class="fa-solid fa-book"></i></span></div>
+                    <p id="st-judul" class="text-3xl sm:text-4xl font-extrabold mt-3 tabular-nums text-emerald-950">0</p>
+                    <p class="text-[11px] text-slate-500 mt-1">judul berbeda</p>
                 </div>
                 <div class="glass glass-hover p-5">
-                    <div class="flex items-center justify-between"><p class="lbl !mb-0">Total Eksemplar</p><i class="fa-solid fa-layer-group text-cyan-300"></i></div>
-                    <p id="st-eks" class="text-3xl sm:text-4xl font-extrabold mt-3 tabular-nums text-cyan-300">0</p>
-                    <p class="text-[11px] text-slate-400 mt-1">nomor inventaris</p>
+                    <div class="flex items-center justify-between"><p class="lbl !mb-0">Total Eksemplar</p><span class="w-9 h-9 rounded-xl bg-lime-100 text-lime-700 flex items-center justify-center"><i class="fa-solid fa-layer-group"></i></span></div>
+                    <p id="st-eks" class="text-3xl sm:text-4xl font-extrabold mt-3 tabular-nums text-green-700">0</p>
+                    <p class="text-[11px] text-slate-500 mt-1">nomor inventaris</p>
                 </div>
                 <div class="glass glass-hover p-5">
-                    <div class="flex items-center justify-between"><p class="lbl !mb-0">Dipinjam</p><i class="fa-solid fa-hand-holding text-amber-300"></i></div>
-                    <p id="st-dipinjam" class="text-3xl sm:text-4xl font-extrabold mt-3 tabular-nums text-amber-300">0</p>
-                    <p class="text-[11px] text-slate-400 mt-1">belum dikembalikan</p>
+                    <div class="flex items-center justify-between"><p class="lbl !mb-0">Dipinjam</p><span class="w-9 h-9 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center"><i class="fa-solid fa-hand-holding"></i></span></div>
+                    <p id="st-dipinjam" class="text-3xl sm:text-4xl font-extrabold mt-3 tabular-nums text-amber-600">0</p>
+                    <p class="text-[11px] text-slate-500 mt-1">belum dikembalikan</p>
                 </div>
                 <div class="glass glass-hover p-5">
-                    <div class="flex items-center justify-between"><p class="lbl !mb-0">Kondisi Baik</p><i class="fa-solid fa-circle-check text-emerald-300"></i></div>
-                    <p id="st-baik" class="text-3xl sm:text-4xl font-extrabold mt-3 tabular-nums text-emerald-300">0</p>
-                    <p class="text-[11px] text-slate-400 mt-1">eksemplar layak pakai</p>
+                    <div class="flex items-center justify-between"><p class="lbl !mb-0">Kondisi Baik</p><span class="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center"><i class="fa-solid fa-circle-check"></i></span></div>
+                    <p id="st-baik" class="text-3xl sm:text-4xl font-extrabold mt-3 tabular-nums text-emerald-600">0</p>
+                    <p class="text-[11px] text-slate-500 mt-1">eksemplar layak pakai</p>
                 </div>
             </div>
 
             <div class="grid lg:grid-cols-5 gap-5">
                 <div class="glass p-6 lg:col-span-2">
-                    <h3 class="font-bold mb-4 flex items-center gap-2"><i class="fa-solid fa-chart-simple text-indigo-300"></i> Kondisi Koleksi</h3>
-                    <div class="h-3 rounded-full bg-white/10 overflow-hidden flex">
-                        <div id="bar-baik"   class="h-full bg-emerald-400 transition-all duration-1000" style="width:0%"></div>
+                    <h3 class="font-bold mb-4 flex items-center gap-2 text-emerald-950"><i class="fa-solid fa-chart-simple text-emerald-600"></i> Kondisi Koleksi</h3>
+                    <div class="h-3 rounded-full bg-emerald-100 overflow-hidden flex">
+                        <div id="bar-baik"   class="h-full bg-emerald-500 transition-all duration-1000" style="width:0%"></div>
                         <div id="bar-kurang" class="h-full bg-amber-400 transition-all duration-1000" style="width:0%"></div>
                         <div id="bar-rusak"  class="h-full bg-rose-400 transition-all duration-1000" style="width:0%"></div>
                     </div>
-                    <div class="mt-4 space-y-2 text-xs">
-                        <div class="flex justify-between"><span class="flex items-center gap-2"><i class="w-2 h-2 rounded-full bg-emerald-400"></i> Baik</span><b id="lg-baik">0</b></div>
-                        <div class="flex justify-between"><span class="flex items-center gap-2"><i class="w-2 h-2 rounded-full bg-amber-400"></i> Kurang Baik</span><b id="lg-kurang">0</b></div>
-                        <div class="flex justify-between"><span class="flex items-center gap-2"><i class="w-2 h-2 rounded-full bg-rose-400"></i> Rusak</span><b id="lg-rusak">0</b></div>
+                    <div class="mt-4 space-y-2 text-xs text-slate-600">
+                        <div class="flex justify-between"><span class="flex items-center gap-2"><i class="w-2 h-2 rounded-full bg-emerald-500"></i> Baik</span><b id="lg-baik" class="text-emerald-950">0</b></div>
+                        <div class="flex justify-between"><span class="flex items-center gap-2"><i class="w-2 h-2 rounded-full bg-amber-400"></i> Kurang Baik</span><b id="lg-kurang" class="text-emerald-950">0</b></div>
+                        <div class="flex justify-between"><span class="flex items-center gap-2"><i class="w-2 h-2 rounded-full bg-rose-400"></i> Rusak</span><b id="lg-rusak" class="text-emerald-950">0</b></div>
                     </div>
                 </div>
                 <div class="glass p-6 lg:col-span-3">
                     <div class="flex items-center justify-between mb-3">
-                        <h3 class="font-bold flex items-center gap-2"><i class="fa-solid fa-clock-rotate-left text-cyan-300"></i> Peminjaman Terbaru</h3>
-                        <a href="#peminjaman" data-nav="peminjaman" class="text-xs text-cyan-300 hover:underline">Lihat semua</a>
+                        <h3 class="font-bold flex items-center gap-2 text-emerald-950"><i class="fa-solid fa-clock-rotate-left text-emerald-600"></i> Peminjaman Terbaru</h3>
+                        <a href="#peminjaman" data-nav="peminjaman" class="text-xs font-semibold text-emerald-700 hover:underline">Lihat semua</a>
                     </div>
                     <div id="recentLoans" class="space-y-2 text-sm"></div>
                 </div>
+            </div>
+            <div class="glass p-6">
+                <div class="flex flex-wrap items-start justify-between gap-2 mb-4">
+                    <div>
+                        <h3 class="font-bold flex items-center gap-2 text-emerald-950"><i class="fa-solid fa-ranking-star text-emerald-600"></i> Kelas Paling Sering Meminjam</h3>
+                        <p class="text-xs text-slate-500 mt-1">Berdasarkan jumlah transaksi peminjaman per kelas.</p>
+                    </div>
+                    <span id="kelasTop" class="badge b-ok hidden"></span>
+                </div>
+                <div id="kelasStats" class="grid md:grid-cols-2 gap-x-8 gap-y-4"></div>
             </div>
         </section>
 
@@ -301,8 +371,8 @@
         <section id="page-inventaris" class="page space-y-5 hidden">
             <div class="glass p-5 sm:p-6 flex flex-wrap items-center justify-between gap-4">
                 <div>
-                    <h2 class="text-2xl font-extrabold">Auto Inventaris</h2>
-                    <p class="text-sm text-slate-400 mt-1 max-w-2xl">Daftar inventaris ruang perpustakaan. Tiap eksemplar punya nomor unik <span class="font-mono text-cyan-300">INV/NoUrut/Tahun/Eksemplar</span>; NoUrut kembali ke 0001 setiap ganti tahun.</p>
+                    <h2 class="text-2xl font-extrabold text-emerald-950">Auto Inventaris</h2>
+                    <p class="text-sm text-slate-500 mt-1 max-w-2xl">Daftar inventaris ruang perpustakaan. Tiap eksemplar punya nomor unik <span class="font-mono text-emerald-800 font-semibold">INV/NoUrut/Tahun/Eksemplar</span>; NoUrut kembali ke 0001 setiap ganti tahun.</p>
                 </div>
                 <div class="flex flex-wrap gap-2">
                     <input type="file" id="inv-file" class="hidden" accept=".xlsx,.xls">
@@ -312,10 +382,10 @@
                 </div>
             </div>
 
-            <div id="inv-warning" class="hidden text-xs rounded-2xl p-4 bg-amber-400/10 border border-amber-400/30 text-amber-200"></div>
+            <div id="inv-warning" class="hidden text-xs rounded-2xl p-4 bg-amber-50 border border-amber-300 text-amber-900"></div>
 
             <div class="glass overflow-hidden">
-                <div class="p-4 border-b border-white/10 flex flex-wrap items-center gap-3">
+                <div class="p-4 border-b border-emerald-900/10 flex flex-wrap items-center gap-3">
                     <div class="relative flex-1 min-w-[220px]">
                         <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
                         <input id="inv-search" class="field !pl-9" placeholder="Cari judul, no. inventaris, kategori, atau tahun…">
@@ -328,7 +398,7 @@
                     <select id="inv-perpage" class="field !w-auto"><option value="25">25 / hal</option><option value="50" selected>50 / hal</option><option value="100">100 / hal</option></select>
                     <button id="inv-reset" class="btn btn-ghost btn-sm" title="Reset filter"><i class="fa-solid fa-rotate-left"></i></button>
                 </div>
-                <div class="px-4 py-2 text-xs text-slate-400 border-b border-white/5" id="inv-count">0 eksemplar</div>
+                <div class="px-4 py-2 text-xs text-slate-500 border-b border-emerald-900/5 bg-emerald-50/50" id="inv-count">0 eksemplar</div>
                 <div class="overflow-auto max-h-[62vh]">
                     <table class="tbl">
                         <thead><tr>
@@ -339,14 +409,14 @@
                         <tbody id="inv-tbody"></tbody>
                     </table>
                 </div>
-                <div class="p-4 border-t border-white/10 flex flex-wrap items-center justify-between gap-3">
-                    <span id="inv-info" class="text-xs text-slate-400">Menampilkan 0 data</span>
+                <div class="p-4 border-t border-emerald-900/10 flex flex-wrap items-center justify-between gap-3">
+                    <span id="inv-info" class="text-xs text-slate-500">Menampilkan 0 data</span>
                     <div class="flex items-center gap-2">
-                        <span class="text-xs text-slate-400">Ke hal.</span>
+                        <span class="text-xs text-slate-500">Ke hal.</span>
                         <input id="inv-goto" type="number" min="1" class="field !w-20 !py-1.5 text-center" placeholder="No">
                         <button id="inv-goto-btn" class="btn btn-ghost btn-sm">Go</button>
                         <button id="inv-prev" class="btn btn-ghost btn-sm"><i class="fa-solid fa-chevron-left"></i></button>
-                        <span id="inv-page" class="badge b-info !px-3 !py-1.5">1 / 1</span>
+                        <span id="inv-page" class="badge b-ok !px-3 !py-1.5">1 / 1</span>
                         <button id="inv-next" class="btn btn-ghost btn-sm"><i class="fa-solid fa-chevron-right"></i></button>
                     </div>
                 </div>
@@ -357,17 +427,21 @@
         <section id="page-peminjaman" class="page space-y-5 hidden">
             <div class="flex flex-wrap items-center justify-between gap-3">
                 <div>
-                    <h2 class="text-2xl font-extrabold">Sirkulasi & Peminjaman</h2>
-                    <p class="text-sm text-slate-400">Nama peminjam disingkat otomatis untuk menjaga privasi.</p>
+                    <h2 class="text-2xl font-extrabold text-emerald-950">Sirkulasi & Peminjaman</h2>
+                    <p class="text-sm text-slate-500">Nama peminjam disingkat otomatis untuk menjaga privasi.</p>
                 </div>
-                <button id="pm-export" class="btn btn-amber admin-only hidden"><i class="fa-solid fa-file-export"></i> Export Excel</button>
+                <div class="flex flex-wrap gap-2">
+                    <input type="file" id="pm-file" class="hidden" accept=".xlsx,.xls">
+                    <button id="pm-import" class="btn btn-green admin-only hidden"><i class="fa-solid fa-file-import"></i> Import Excel</button>
+                    <button id="pm-export" class="btn btn-amber admin-only hidden"><i class="fa-solid fa-file-export"></i> Export Excel</button>
+                </div>
             </div>
 
-            <div class="glass p-5 sm:p-6">
-                <h3 class="font-bold mb-4 flex items-center gap-2"><i class="fa-solid fa-feather-pointed text-indigo-300"></i> Form Catat Pinjam</h3>
+            <div id="pm-form-card" class="glass p-5 sm:p-6">
+                <h3 class="font-bold mb-4 flex items-center gap-2 text-emerald-950"><i class="fa-solid fa-feather-pointed text-emerald-600"></i> Form Catat Pinjam</h3>
                 <div class="grid md:grid-cols-3 gap-4">
                     <div><label class="lbl">Nama Peminjam</label><input id="pm-nama" class="field" maxlength="100" placeholder="Nama siswa / guru"></div>
-                    <div><label class="lbl">Kelas / Guru</label><input id="pm-kelas" class="field" maxlength="60" placeholder="Contoh: XI BDP"></div>
+                    <div class="relative"><label class="lbl">Kelas / Guru</label><input id="pm-kelas" class="field" maxlength="60" autocomplete="off" role="combobox" aria-expanded="false" placeholder="Ketik: X, XI, XII atau jurusan…"><div id="pm-kelas-list" class="cb-list hidden" role="listbox"></div></div>
                     <div><label class="lbl">Judul Buku</label><input id="pm-judul" list="dl-judul" class="field" maxlength="250" placeholder="Pilih atau ketik judul"><datalist id="dl-judul"></datalist></div>
                     <div><label class="lbl">Jumlah</label><input id="pm-jumlah" type="number" min="1" max="50" value="1" class="field"></div>
                     <div><label class="lbl">No Buku</label><input id="pm-nobuku" class="field" maxlength="60" placeholder="Contoh: INV/0001/2020/1"></div>
@@ -378,7 +452,7 @@
             </div>
 
             <div class="glass overflow-hidden">
-                <div class="p-4 border-b border-white/10 flex flex-wrap items-center gap-3">
+                <div class="p-4 border-b border-emerald-900/10 flex flex-wrap items-center gap-3">
                     <div class="relative flex-1 min-w-[220px]">
                         <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
                         <input id="pm-search" class="field !pl-9" placeholder="Cari nama, judul, atau kelas…">
@@ -387,7 +461,7 @@
                     <button id="pm-refresh" class="btn btn-ghost btn-sm" title="Muat ulang"><i class="fa-solid fa-arrows-rotate"></i></button>
                 </div>
                 <div class="overflow-auto max-h-[60vh]">
-                    <table class="tbl">
+                    <table class="tbl tbl-cards">
                         <thead><tr>
                             <th class="w-12 text-center">No</th><th>Peminjam</th><th>Kelas</th><th>Judul Buku</th><th class="text-center">Jml</th>
                             <th>Tgl Pinjam</th><th>Status</th><th>No Buku</th><th>Catatan</th><th class="text-center admin-only hidden">Aksi</th>
@@ -395,11 +469,11 @@
                         <tbody id="pm-tbody"></tbody>
                     </table>
                 </div>
-                <div class="p-4 border-t border-white/10 flex items-center justify-between gap-3">
-                    <span id="pm-info" class="text-xs text-slate-400">Menampilkan 0 data</span>
+                <div class="p-4 border-t border-emerald-900/10 flex items-center justify-between gap-3">
+                    <span id="pm-info" class="text-xs text-slate-500">Menampilkan 0 data</span>
                     <div class="flex items-center gap-2">
                         <button id="pm-prev" class="btn btn-ghost btn-sm"><i class="fa-solid fa-chevron-left"></i></button>
-                        <span id="pm-page" class="badge b-info !px-3 !py-1.5">1 / 1</span>
+                        <span id="pm-page" class="badge b-ok !px-3 !py-1.5">1 / 1</span>
                         <button id="pm-next" class="btn btn-ghost btn-sm"><i class="fa-solid fa-chevron-right"></i></button>
                     </div>
                 </div>
@@ -410,17 +484,19 @@
         <section id="page-pengajuan" class="page space-y-5 hidden">
             <div class="flex flex-wrap items-center justify-between gap-3">
                 <div>
-                    <h2 class="text-2xl font-extrabold">Pengajuan Buku Baru</h2>
-                    <p class="text-sm text-slate-400">Usulkan buku pelajaran atau referensi yang dibutuhkan.</p>
+                    <h2 class="text-2xl font-extrabold text-emerald-950">Pengajuan Buku Baru</h2>
+                    <p class="text-sm text-slate-500">Usulkan buku pelajaran atau referensi yang dibutuhkan.</p>
                 </div>
-                <div class="flex gap-2">
+                <div class="flex flex-wrap gap-2">
+                    <input type="file" id="pg-file" class="hidden" accept=".xlsx,.xls">
+                    <button id="pg-import" class="btn btn-green admin-only hidden"><i class="fa-solid fa-file-import"></i> Import Excel</button>
                     <button id="pg-export" class="btn btn-amber admin-only hidden"><i class="fa-solid fa-file-export"></i> Export Excel</button>
-                    <a href="https://wa.me/6282179175960?text=Halo%20Admin%20Perpus%20Musa,%20saya%20ingin%20mengajukan%20pengadaan%20buku%20baru." target="_blank" rel="noopener" class="btn btn-green"><i class="fa-brands fa-whatsapp text-base"></i> WA Admin</a>
+                    <a href="https://wa.me/6282179175960?text=Halo%20Admin%20Perpus%20Musa,%20saya%20ingin%20mengajukan%20pengadaan%20buku%20baru." target="_blank" rel="noopener" class="btn btn-primary"><i class="fa-brands fa-whatsapp text-base"></i> WA Admin</a>
                 </div>
             </div>
 
             <div class="glass p-5 sm:p-6">
-                <h3 class="font-bold mb-4 flex items-center gap-2"><i class="fa-solid fa-pen-to-square text-indigo-300"></i> Form Pengajuan</h3>
+                <h3 class="font-bold mb-4 flex items-center gap-2 text-emerald-950"><i class="fa-solid fa-pen-to-square text-emerald-600"></i> Form Pengajuan</h3>
                 <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
                     <div><label class="lbl">Nama Pemohon / Guru</label><input id="pg-nama" class="field" maxlength="100" placeholder="Nama lengkap"></div>
                     <div><label class="lbl">Mapel / Jabatan</label><input id="pg-jabatan" class="field" maxlength="100" placeholder="Contoh: Guru Kejuruan TKJ"></div>
@@ -437,7 +513,7 @@
             </div>
 
             <div class="glass overflow-hidden">
-                <div class="p-4 border-b border-white/10 flex flex-wrap items-center gap-3">
+                <div class="p-4 border-b border-emerald-900/10 flex flex-wrap items-center gap-3">
                     <div class="relative flex-1 min-w-[220px]">
                         <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
                         <input id="pg-search" class="field !pl-9" placeholder="Cari pemohon atau judul…">
@@ -454,6 +530,47 @@
                 </div>
             </div>
         </section>
+
+        <!-- ================= CETAK PUNGGUNG BUKU ================= -->
+        <section id="page-cetak" class="page space-y-5 hidden">
+            <div class="glass p-5 sm:p-6 flex flex-wrap items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-2xl font-extrabold text-emerald-950">Cetak Label Punggung Buku</h2>
+                    <p class="text-sm text-slate-500 mt-1">Input data label secara manual untuk dicetak (3 kolom per baris, A4) atau diekspor ke Excel.</p>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                    <button id="lb-print" class="btn btn-primary"><i class="fa-solid fa-print"></i> Cetak Langsung</button>
+                    <button id="lb-export" class="btn btn-green"><i class="fa-solid fa-file-excel"></i> Export Excel Label</button>
+                </div>
+            </div>
+
+            <div class="glass p-5 sm:p-6">
+                <h3 class="font-bold mb-4 flex items-center gap-2 text-emerald-950"><i class="fa-solid fa-pen-to-square text-emerald-600"></i> Form Tambah Label Punggung</h3>
+                <form id="lb-form" class="grid grid-cols-1 md:grid-cols-5 gap-4">
+                    <div><label class="lbl">Instansi / Sekolah</label><input class="field font-bold" value="SMK MUHAMMADIYAH 1 PRINGSEWU" readonly></div>
+                    <div><label class="lbl">No. Klasifikasi *</label><input id="lb-klas" class="field" placeholder="Contoh: 927" required maxlength="30"></div>
+                    <div><label class="lbl">Inisial / Pengarang *</label><input id="lb-peng" class="field" placeholder="Contoh: Hel" required maxlength="30"></div>
+                    <div><label class="lbl">Inisial Judul *</label><input id="lb-judul" class="field" placeholder="Contoh: B" required maxlength="30"></div>
+                    <div><label class="lbl">Jumlah (Qty) *</label><input id="lb-qty" type="number" min="1" max="500" value="1" class="field font-bold text-emerald-700" required></div>
+                    <div class="md:col-span-5 flex justify-end gap-2 pt-1">
+                        <button type="button" id="lb-reset" class="btn btn-ghost btn-sm"><i class="fa-solid fa-trash-can"></i> Reset Semua Data</button>
+                        <button type="submit" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Tambahkan ke Daftar</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="glass overflow-hidden">
+                <div class="p-4 border-b border-emerald-900/10 flex items-center justify-between">
+                    <h3 class="font-bold text-emerald-950">Preview Data Label (<span id="lb-count">0</span>)</h3>
+                </div>
+                <div class="overflow-auto max-h-[55vh]">
+                    <table class="tbl">
+                        <thead><tr><th class="w-12 text-center">No</th><th>Instansi</th><th>Klasifikasi</th><th>Inisial Pengarang</th><th>Inisial Judul</th><th class="text-center">Aksi</th></tr></thead>
+                        <tbody id="lb-tbody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
     </main>
 
     <footer class="text-center text-xs text-slate-500 py-8">© 2026 DawDev & Musa Perpus Developer</footer>
@@ -462,13 +579,13 @@
     <div id="loginModal" class="modal-wrap">
         <div class="modal-card glass max-w-sm p-6">
             <div class="flex items-center justify-between mb-5">
-                <h3 class="text-lg font-extrabold flex items-center gap-2"><i class="fa-solid fa-lock text-indigo-300"></i> Login Admin</h3>
-                <button data-close="loginModal" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
+                <h3 class="text-lg font-extrabold flex items-center gap-2 text-emerald-950"><i class="fa-solid fa-lock text-emerald-600"></i> Login Admin</h3>
+                <button data-close="loginModal" class="text-slate-400 hover:text-emerald-900"><i class="fa-solid fa-xmark text-xl"></i></button>
             </div>
             <form id="loginForm" class="space-y-4">
                 <div><label class="lbl">Email</label><input id="login-email" type="email" autocomplete="username" class="field" required></div>
                 <div><label class="lbl">Password</label><input id="login-pass" type="password" autocomplete="current-password" class="field" required></div>
-                <p id="login-error" class="text-xs text-rose-300 hidden"></p>
+                <p id="login-error" class="text-xs text-rose-600 hidden"></p>
                 <button id="login-submit" type="submit" class="btn btn-primary w-full">Masuk</button>
             </form>
         </div>
@@ -478,8 +595,8 @@
     <div id="invModal" class="modal-wrap">
         <div class="modal-card glass max-w-xl p-6">
             <div class="flex items-center justify-between mb-5">
-                <h3 class="text-lg font-extrabold">Tambah Buku ke Inventaris</h3>
-                <button data-close="invModal" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
+                <h3 class="text-lg font-extrabold text-emerald-950">Tambah Buku ke Inventaris</h3>
+                <button data-close="invModal" class="text-slate-400 hover:text-emerald-900"><i class="fa-solid fa-xmark text-xl"></i></button>
             </div>
             <div class="grid grid-cols-2 gap-4">
                 <div class="col-span-2"><label class="lbl">Judul / Nama Barang *</label><input id="im-nama" class="field" maxlength="250"></div>
@@ -490,8 +607,8 @@
                 <div><label class="lbl">Jumlah Rusak</label><input id="im-rusak" type="number" min="0" value="0" class="field"></div>
                 <div><label class="lbl">Kurang Baik (otomatis)</label><input id="im-kurang" type="number" class="field" readonly></div>
                 <div><label class="lbl">Kategori</label><input id="im-kategori" class="field" maxlength="80" placeholder="Umum"></div>
-                <p id="im-info" class="col-span-2 text-xs text-cyan-300 font-mono"></p>
-                <p id="im-error" class="col-span-2 text-xs text-rose-300 hidden"></p>
+                <p id="im-info" class="col-span-2 text-xs text-emerald-700 font-mono font-semibold"></p>
+                <p id="im-error" class="col-span-2 text-xs text-rose-600 hidden"></p>
             </div>
             <div class="flex justify-end gap-3 mt-5">
                 <button data-close="invModal" class="btn btn-ghost">Batal</button>
@@ -504,10 +621,10 @@
     <div id="editModal" class="modal-wrap">
         <div class="modal-card glass max-w-lg p-6">
             <div class="flex items-center justify-between mb-1">
-                <h3 class="text-lg font-extrabold">Edit Data</h3>
-                <button data-close="editModal" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
+                <h3 class="text-lg font-extrabold text-emerald-950">Edit Data</h3>
+                <button data-close="editModal" class="text-slate-400 hover:text-emerald-900"><i class="fa-solid fa-xmark text-xl"></i></button>
             </div>
-            <p id="em-no" class="font-mono text-xs text-cyan-300 mb-5"></p>
+            <p id="em-no" class="font-mono text-xs text-emerald-700 font-semibold mb-5"></p>
             <div class="grid grid-cols-2 gap-4">
                 <div class="col-span-2"><label class="lbl">Judul / Nama Barang</label><input id="em-nama" class="field" maxlength="250"></div>
                 <div class="col-span-2"><label class="lbl">Merek / Penerbit</label><input id="em-merek" class="field" maxlength="150"></div>
@@ -515,8 +632,8 @@
                 <div><label class="lbl">Kondisi eksemplar ini</label>
                     <select id="em-kondisi" class="field"><option>Baik</option><option>Kurang Baik</option><option>Rusak</option></select>
                 </div>
-                <label class="col-span-2 flex items-center gap-2 text-xs text-slate-300">
-                    <input id="em-all" type="checkbox" class="accent-indigo-400"> Terapkan judul, merek & kategori ke semua eksemplar judul ini (<span id="em-count">0</span>)
+                <label class="col-span-2 flex items-center gap-2 text-xs text-slate-600">
+                    <input id="em-all" type="checkbox" class="accent-green-700"> Terapkan judul, merek & kategori ke semua eksemplar judul ini (<span id="em-count">0</span>)
                 </label>
             </div>
             <div class="flex flex-wrap justify-between gap-3 mt-6">
@@ -530,5 +647,6 @@
     </div>
 
     <script src="script.js"></script>
+    <script src="scan-barcode.js"></script>
 </body>
 </html>
