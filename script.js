@@ -24,10 +24,85 @@ const state = {
 const $ = (id) => document.getElementById(id);
 const esc = (v) => String(v == null ? '' : v).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const fmt = (n) => Number(n || 0).toLocaleString('id-ID');
+const pad2 = (n) => String(n).padStart(2, '0');
 const pad4 = (n) => String(n).padStart(4, '0');
 const norm = (v) => String(v == null ? '' : v).trim().toLowerCase().replace(/\s+/g, ' ');
 const todayISO = () => new Date().toLocaleDateString('en-CA'); // YYYY-MM-DD (zona waktu lokal)
+// Hanya tanggal valid (YYYY-MM-DD) yang dianggap SUDAH kembali; null, '', '-' = masih dipinjam
+const sudahKembali = (p) => !!normTgl(p && p.tgl_kembali);
 const debounce = (fn, ms = 150) => { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); }; };
+
+// ---------- Tanggal dd/mm/yyyy ----------
+const isoToDMY = (v) => { const n = normTgl(v); return n ? `${n.slice(8, 10)}/${n.slice(5, 7)}/${n.slice(0, 4)}` : ''; };
+const todayDMY = () => isoToDMY(todayISO());
+function parseDMY(v) {
+    const m = String(v || '').trim().match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+    if (!m) return null;
+    const d = +m[1], mo = +m[2], y = +m[3], dt = new Date(y, mo - 1, d);
+    if (y < 1900 || y > 2100 || dt.getFullYear() !== y || dt.getMonth() !== mo - 1 || dt.getDate() !== d) return null;
+    return `${y}-${String(mo).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+}
+// Terima format ISO (yyyy-mm-dd) ATAU dd/mm/yyyy (juga dd-mm-yyyy, dd.mm.yyyy) -> ISO, atau null
+function normTgl(v) {
+    const t = String(v == null ? '' : v).trim();
+    let m = t.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+    if (m) return parseDMY(`${m[3]}/${m[2]}/${m[1]}`);
+    m = t.match(/^(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{4})/);
+    return m ? parseDMY(`${m[1]}/${m[2]}/${m[3]}`) : null;
+}
+
+// Kalender sendiri (selalu hari-bulan-tahun, tidak ikut format bahasa browser)
+const BULAN = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+const HARI = ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'];
+const cal = { el: document.createElement('div'), input: null, y: 0, m: 0 };
+cal.el.className = 'cal-pop hidden'; cal.el.id = 'calPop'; document.body.appendChild(cal.el);
+const kalClose = () => { cal.el.classList.add('hidden'); cal.input = null; };
+function kalRender() {
+    const first = (new Date(cal.y, cal.m, 1).getDay() + 6) % 7;
+    const n = new Date(cal.y, cal.m + 1, 0).getDate();
+    const sel = parseDMY(cal.input.value), now = todayISO();
+    let cells = '<span></span>'.repeat(first);
+    for (let d = 1; d <= n; d++) {
+        const iso = `${cal.y}-${pad2(cal.m + 1)}-${pad2(d)}`;
+        cells += `<button type="button" class="cal-d${iso === sel ? ' sel' : ''}${iso === now ? ' now' : ''}" data-c="day" data-d="${d}">${d}</button>`;
+    }
+    cal.el.innerHTML = `<div class="cal-nav"><button type="button" data-c="py" aria-label="Tahun sebelumnya">«</button><button type="button" data-c="pm" aria-label="Bulan sebelumnya">‹</button><b>${BULAN[cal.m]} ${cal.y}</b><button type="button" data-c="nm" aria-label="Bulan berikutnya">›</button><button type="button" data-c="ny" aria-label="Tahun berikutnya">»</button></div>`
+        + `<div class="cal-grid">${HARI.map(x => `<span class="cal-h">${x}</span>`).join('')}${cells}</div><button type="button" class="cal-today" data-c="today">Hari ini · ${todayDMY()}</button>`;
+}
+function kalOpen(t) {
+    const iso = parseDMY(t.value) || todayISO();
+    cal.input = t; cal.y = +iso.slice(0, 4); cal.m = +iso.slice(5, 7) - 1;
+    kalRender(); cal.el.classList.remove('hidden');
+    const r = t.getBoundingClientRect(), w = 288, h = cal.el.offsetHeight;
+    let top = r.bottom + 6; if (top + h > innerHeight - 8) top = Math.max(8, r.top - h - 6);
+    cal.el.style.left = Math.min(Math.max(8, r.left), innerWidth - w - 8) + 'px'; cal.el.style.top = top + 'px';
+}
+cal.el.addEventListener('click', (e) => {
+    const b = e.target.closest('[data-c]'); if (!b || !cal.input) return;
+    const c = b.dataset.c;
+    if (c === 'pm') { cal.m--; if (cal.m < 0) { cal.m = 11; cal.y--; } }
+    else if (c === 'nm') { cal.m++; if (cal.m > 11) { cal.m = 0; cal.y++; } }
+    else if (c === 'py') cal.y--;
+    else if (c === 'ny') cal.y++;
+    else {
+        const iso = c === 'today' ? todayISO() : `${cal.y}-${pad2(cal.m + 1)}-${pad2(+b.dataset.d)}`;
+        cal.input.value = isoToDMY(iso);
+        cal.input.dispatchEvent(new Event('input', { bubbles: true }));
+        return kalClose();
+    }
+    kalRender();
+});
+document.addEventListener('click', (e) => { if (!cal.input || e.target.closest('#calPop, .dmy-btn')) return; kalClose(); });
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') kalClose(); });
+window.addEventListener('resize', kalClose);
+document.querySelectorAll('.dmy-wrap').forEach((w) => {
+    const t = w.querySelector('.dmy');
+    t.addEventListener('input', () => {                       // auto-sisipkan "/" saat mengetik angka
+        const dg = t.value.replace(/\D/g, '').slice(0, 8);
+        t.value = dg.length > 4 ? `${dg.slice(0, 2)}/${dg.slice(2, 4)}/${dg.slice(4)}` : dg.length > 2 ? `${dg.slice(0, 2)}/${dg.slice(2)}` : dg;
+    });
+    w.querySelector('.dmy-btn').addEventListener('click', () => { if (cal.input === t) kalClose(); else kalOpen(t); });
+});
 
 function ambilTahun(v) {
     const m = String(v == null ? '' : v).match(/(19|20)\d{2}/);
@@ -45,9 +120,7 @@ function singkatNama(n) {
     return w[0] + ' ' + w.slice(1).map(x => x.charAt(0).toUpperCase() + '.').join(' ');
 }
 function tglIndo(s) {
-    if (!s) return '-';
-    const p = String(s).slice(0, 10).split('-');
-    return p.length === 3 ? `${p[2]}/${p[1]}/${p[0]}` : s;
+    return isoToDMY(s) || (s ? String(s) : '-');
 }
 function dbError(e, prefix) {
     console.error(e);
@@ -524,6 +597,16 @@ document.addEventListener('click', async (e) => {
         if (error) return dbError(error, 'Gagal menghapus');
         toast('Eksemplar dihapus', 'ok'); loadInventaris();
     }
+    else if (act === 'pm-edit') {
+        const p = state.pm.find(x => x.id === id);
+        if (!p) return;
+        state.editPm = id;
+        $('ep-nama').value = p.nama || ''; $('ep-kelas').value = p.kelas || ''; $('ep-judul').value = p.judul || '';
+        $('ep-jumlah').value = p.jumlah || 1; $('ep-nobuku').value = p.no_buku || ''; $('ep-catatan').value = p.catatan || '';
+        $('ep-tgl').value = isoToDMY(p.tgl_pinjam); $('ep-kembali').value = sudahKembali(p) ? isoToDMY(p.tgl_kembali) : '';
+        $('ep-error').classList.add('hidden');
+        openModal('editPmModal');
+    }
     else if (act === 'pm-del') {
         if (!confirm('Hapus data peminjaman ini?')) return;
         const { error } = await sb.from('peminjaman').delete().eq('id', id);
@@ -577,11 +660,24 @@ $('em-del-group').addEventListener('click', async () => {
     closeModal('editModal'); toast(`${n} eksemplar dihapus`, 'ok'); loadInventaris();
 });
 
+// Ambil SEMUA baris (Supabase membatasi 1000 baris per permintaan)
+async function ambilSemua(src) {
+    let all = [], from = 0;
+    for (;;) {
+        const { data, error } = await sb.from(src).select('*').order('id', { ascending: false }).range(from, from + 999);
+        if (error) return { error };
+        all = all.concat(data || []);
+        if (!data || data.length < 1000) break;
+        from += 1000;
+    }
+    return { data: all };
+}
+
 // ==================== PEMINJAMAN ====================
 async function loadPeminjaman() {
     // Publik membaca VIEW yang namanya sudah disingkat di server; admin membaca tabel asli.
     const src = state.isAdmin ? 'peminjaman' : 'peminjaman_publik';
-    const { data, error } = await sb.from(src).select('*').order('id', { ascending: false }).range(0, 1999);
+    const { data, error } = await ambilSemua(src);
     if (error) { dbError(error, 'Gagal memuat peminjaman'); return; }
     state.pm = data || [];
     renderPeminjaman(); renderStats(); renderRecent(); renderKelasStats();
@@ -591,8 +687,8 @@ function pmTersaring() {
     const q = $('pm-search').value.trim().toLowerCase();
     const st = $('pm-filter').value;
     return state.pm.filter(p => {
-        if (st === 'dipinjam' && p.tgl_kembali) return false;
-        if (st === 'kembali' && !p.tgl_kembali) return false;
+        if (st === 'dipinjam' && sudahKembali(p)) return false;
+        if (st === 'kembali' && !sudahKembali(p)) return false;
         if (!q) return true;
         return `${p.nama} ${p.judul} ${p.kelas}`.toLowerCase().includes(q);
     });
@@ -613,12 +709,13 @@ function renderPeminjaman() {
             <td data-label="Judul Buku" class="max-w-[260px] truncate" title="${esc(p.judul)}">${esc(p.judul)}</td>
             <td data-label="Jumlah" class="text-center font-bold">${p.jumlah}</td>
             <td data-label="Tgl Pinjam" class="whitespace-nowrap">${tglIndo(p.tgl_pinjam)}</td>
-            <td data-label="Status">${p.tgl_kembali
+            <td data-label="Status">${sudahKembali(p)
                 ? `<span class="badge b-ok"><i class="fa-solid fa-check"></i> Kembali ${tglIndo(p.tgl_kembali)}</span>`
                 : `<button type="button" data-act="pm-return" data-id="${p.id}" class="status-btn pulse-soft" title="Klik untuk konfirmasi sudah dikembalikan"><i class="fa-solid fa-hourglass-half"></i> Dipinjam · klik jika kembali</button>`}</td>
             <td data-label="No Buku" class="font-mono text-xs text-slate-600">${esc(p.no_buku) || '-'}</td>
             <td data-label="Catatan" class="max-w-[160px] truncate text-slate-500" title="${esc(p.catatan)}">${esc(p.catatan) || '-'}</td>
             ${state.isAdmin ? `<td data-label="Aksi" class="text-center whitespace-nowrap">
+                <button data-act="pm-edit" data-id="${p.id}" class="btn btn-amber btn-sm" title="Edit"><i class="fa-solid fa-pen-to-square"></i></button>
                 <button data-act="pm-del" data-id="${p.id}" class="btn btn-red btn-sm" title="Hapus"><i class="fa-solid fa-trash"></i></button>
             </td>` : ''}
         </tr>`).join('')
@@ -639,11 +736,13 @@ $('pm-submit').addEventListener('click', async () => {
     const jumlah = parseInt($('pm-jumlah').value, 10) || 1;
     if (!nama || !judul) return toast('Nama peminjam dan judul buku wajib diisi', 'err');
     if (jumlah < 1 || jumlah > 50) return toast('Jumlah harus 1–50', 'err');
+    const tglPinjam = parseDMY($('pm-tgl').value);
+    if (!tglPinjam) return toast('Tanggal pinjam harus berformat dd/mm/yyyy', 'err');
     const btn = $('pm-submit'); btn.disabled = true;
     // Tanpa .select(): pengunjung anonim hanya boleh INSERT, tidak boleh membaca tabel asli.
     const { error } = await sb.from('peminjaman').insert({
-        nama, kelas: $('pm-kelas').value.trim().toUpperCase().replace(/\s+/g, ' '), judul, jumlah,
-        no_buku: $('pm-nobuku').value.trim(), tgl_pinjam: $('pm-tgl').value || todayISO(),
+        nama, kelas: $('pm-kelas').value.trim().toUpperCase().replace(/\s+/g, ' '), judul, jumlah, tgl_kembali: null,
+        no_buku: $('pm-nobuku').value.trim(), tgl_pinjam: tglPinjam,
         catatan: $('pm-catatan').value.trim()
     });
     btn.disabled = false;
@@ -670,7 +769,7 @@ $('pm-export').addEventListener('click', () => {
 // ==================== PENGAJUAN ====================
 async function loadPengajuan() {
     const src = state.isAdmin ? 'pengajuan' : 'pengajuan_publik';
-    const { data, error } = await sb.from(src).select('*').order('id', { ascending: false }).range(0, 1999);
+    const { data, error } = await ambilSemua(src);
     if (error) { dbError(error, 'Gagal memuat pengajuan'); return; }
     state.pg = data || [];
     renderPengajuan();
@@ -737,7 +836,7 @@ function renderStats() {
     const judul = new Set(state.inv.map(i => i.group_id)).size;
     let baik = 0, kurang = 0, rusak = 0;
     state.inv.forEach(i => { if (i.kondisi === 'Baik') baik++; else if (i.kondisi === 'Kurang Baik') kurang++; else rusak++; });
-    const dipinjam = state.pm.filter(p => !p.tgl_kembali).reduce((s, p) => s + (p.jumlah || 0), 0);
+    const dipinjam = state.pm.filter(p => !sudahKembali(p)).reduce((s, p) => s + (p.jumlah || 0), 0);
 
     const next = { judul, eks, dipinjam, baik };
     const ids = { judul: 'st-judul', eks: 'st-eks', dipinjam: 'st-dipinjam', baik: 'st-baik' };
@@ -762,7 +861,9 @@ function renderRecent() {
                 <div class="font-semibold truncate">${esc(p.judul)}</div>
                 <div class="text-[11px] text-slate-500">${esc(namaTampil(p.nama))} · ${tglIndo(p.tgl_pinjam)}</div>
             </div>
-            ${p.tgl_kembali ? '<span class="badge b-ok">Kembali</span>' : '<span class="badge b-warn pulse-soft">Dipinjam</span>'}
+            ${sudahKembali(p)
+                ? `<span class="badge b-ok shrink-0"><i class="fa-solid fa-check"></i> ${tglIndo(p.tgl_kembali)}</span>`
+                : `<button type="button" data-act="pm-return" data-id="${p.id}" class="status-btn pulse-soft shrink-0" title="Klik jika sudah dikembalikan"><i class="fa-solid fa-hourglass-half"></i> Dipinjam</button>`}
         </div>`).join('')
         : '<p class="text-slate-500 text-sm">Belum ada peminjaman.</p>';
 }
@@ -778,23 +879,59 @@ function updateOpenBadge() {
 }
 
 // ==================== IMPORT EXCEL: PEMINJAMAN & PENGAJUAN (ADMIN) ====================
+// Validasi kalender ketat -> 'YYYY-MM-DD' atau null (menolak bulan 13, 31 Februari, dst.)
+function isoStrict(y, m, d) {
+    if (!(y >= 1900 && y <= 2100 && m >= 1 && m <= 12 && d >= 1 && d <= 31)) return null;
+    const dt = new Date(Date.UTC(y, m - 1, d));
+    if (dt.getUTCFullYear() !== y || dt.getUTCMonth() !== m - 1 || dt.getUTCDate() !== d) return null;
+    return `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+}
+const NAMA_BULAN = {
+    jan: 1, januari: 1, january: 1, feb: 2, februari: 2, february: 2, mar: 3, maret: 3, march: 3,
+    apr: 4, april: 4, mei: 5, may: 5, jun: 6, juni: 6, june: 6, jul: 7, juli: 7, july: 7,
+    agu: 8, agt: 8, agustus: 8, aug: 8, august: 8, sep: 9, sept: 9, september: 9,
+    okt: 10, oktober: 10, oct: 10, october: 10, nov: 11, november: 11, des: 12, desember: 12, dec: 12, december: 12
+};
+// Semua masukan diperlakukan STRICT hari-bulan-tahun (DD/MM/YYYY). Tidak ada tebakan MM/DD.
+// Hasil: 'YYYY-MM-DD' (siap untuk kolom date Supabase) atau null.
 function parseTanggal(v) {
     if (v == null || v === '' || v === '-') return null;
-    const valid = (y, m, d) => (y >= 1900 && y <= 2100 && m >= 1 && m <= 12 && d >= 1 && d <= 31)
-        ? `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}` : null;
+
+    // 1) Objek Date (jaga-jaga, mis. bila dibaca dengan cellDates) -> ambil komponen lokal
     if (v instanceof Date) {
         if (isNaN(v)) return null;
-        return new Date(v.getTime() + 12 * 3600 * 1000).toLocaleDateString('en-CA'); // +12 jam: aman dari selisih zona waktu
+        const t = new Date(v.getTime() + 12 * 3600 * 1000); // +12 jam: aman dari selisih zona waktu
+        return isoStrict(t.getFullYear(), t.getMonth() + 1, t.getDate());
     }
+
+    // 2) Angka = nomor seri tanggal Excel. Y/M/D dibaca langsung dari seri, tanpa lewat objek Date
     if (typeof v === 'number') {
+        if (!(v >= 1 && v < 73051)) return null; // 73051 = 31 Des 2100
         const p = XLSX.SSF.parse_date_code(v);
-        return p ? valid(p.y, p.m, p.d) : null;
+        return p ? isoStrict(p.y, p.m, p.d) : null;
     }
-    const s = String(v).trim().split(' ')[0];
-    let m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
-    if (m) return valid(+m[1], +m[2], +m[3]);
-    m = s.match(/^(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{2,4})$/);
-    if (m) return valid(m[3].length === 2 ? 2000 + +m[3] : +m[3], +m[2], +m[1]);
+
+    // 3) Teks
+    const s = String(v).trim().replace(/\s+/g, ' ');
+    let m;
+
+    // yyyy-mm-dd / yyyy/mm/dd (boleh diikuti jam)
+    m = s.match(/^(\d{4})[\-\/.](\d{1,2})[\-\/.](\d{1,2})(?:[T ].*)?$/);
+    if (m) return isoStrict(+m[1], +m[2], +m[3]);
+
+    // dd/mm/yyyy, dd-mm-yyyy, dd.mm.yyyy (tahun 2 digit -> 20xx). Kelompok 1 = HARI, kelompok 2 = BULAN
+    m = s.match(/^(\d{1,2})[\-\/.](\d{1,2})[\-\/.](\d{4}|\d{2})(?:[T ].*)?$/);
+    if (m) {
+        const y = m[3].length === 2 ? 2000 + +m[3] : +m[3];
+        return isoStrict(y, +m[2], +m[1]);
+    }
+
+    // "6 November 2026" / "06-Nov-2026"
+    m = s.match(/^(\d{1,2})[ \-]([A-Za-z]+)\.?[ \-](\d{4})$/);
+    if (m && NAMA_BULAN[m[2].toLowerCase()]) return isoStrict(+m[3], NAMA_BULAN[m[2].toLowerCase()], +m[1]);
+
+    // Nomor seri Excel yang tersimpan sebagai teks, mis. "46332"
+    if (/^\d{5}$/.test(s)) return parseTanggal(+s);
     return null;
 }
 // Baca sheet pertama; nama kolom dinormalkan: "KELAS/ GURU" -> "KELASGURU", "CATATAN'" -> "CATATAN"
@@ -804,8 +941,9 @@ function bacaExcelRows(file) {
         reader.onerror = () => reject(new Error('Gagal membaca file.'));
         reader.onload = (ev) => {
             try {
-                const wb = XLSX.read(new Uint8Array(ev.target.result), { type: 'array', cellDates: true });
-                const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { defval: '' });
+                const wb = XLSX.read(new Uint8Array(ev.target.result), { type: 'array', cellDates: false, raw: true });
+                // raw:true -> sel tanggal Excel keluar sebagai nomor seri, teks tetap teks (tanpa tebakan format US)
+                const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { defval: '', raw: true });
                 resolve(rows.map(r => {
                     const o = {};
                     Object.keys(r).forEach(k => { o[String(k).toUpperCase().replace(/[^A-Z0-9]/g, '')] = r[k]; });
@@ -996,28 +1134,75 @@ $('lb-export').addEventListener('click', () => {
 renderLabel();
 
 // ==================== KONFIRMASI PENGEMBALIAN (ADMIN & USER BIASA) ====================
-async function kembalikanBuku(id) {
-    const p = state.pm.find(x => x.id === id);
-    if (!p || p.tgl_kembali) return;
-    if (!confirm(`Konfirmasi buku "${p.judul}" sudah dikembalikan?\nTanggal pengembalian dicatat hari ini (${tglIndo(todayISO())}).`)) return;
-    // Admin: update langsung. Pengunjung biasa: lewat fungsi database khusus (lihat supabase-kembalikan-buku.sql)
-    const { error } = state.isAdmin
-        ? await sb.from('peminjaman').update({ tgl_kembali: todayISO() }).eq('id', id)
-        : await sb.rpc('kembalikan_buku', { p_id: id });
-    if (error) return dbError(error, 'Gagal mengonfirmasi pengembalian');
-    toast('Buku ditandai sudah dikembalikan', 'ok');
-    p.tgl_kembali = todayISO(); renderPeminjaman(); renderStats(); renderRecent(); renderKelasStats();
+$('ep-save').addEventListener('click', async () => {
+    const id = state.editPm;
+    if (!state.isAdmin || !id) return;
+    const err = (m) => { $('ep-error').textContent = m; $('ep-error').classList.remove('hidden'); };
+    const nama = $('ep-nama').value.trim(), judul = $('ep-judul').value.trim();
+    const jumlah = parseInt($('ep-jumlah').value, 10);
+    const tglPinjam = parseDMY($('ep-tgl').value);
+    const kembaliRaw = $('ep-kembali').value.trim();
+    const tglKembali = kembaliRaw ? parseDMY(kembaliRaw) : null;
+    if (!nama || !judul) return err('Nama peminjam dan judul buku wajib diisi.');
+    if (!(jumlah >= 1 && jumlah <= 50)) return err('Jumlah harus 1–50.');
+    if (!tglPinjam) return err('Tanggal pinjam harus berformat dd/mm/yyyy.');
+    if (kembaliRaw && !tglKembali) return err('Tanggal kembali harus berformat dd/mm/yyyy (atau kosongkan).');
+    if (tglKembali && tglKembali < tglPinjam) return err('Tanggal kembali tidak boleh sebelum tanggal pinjam.');
+    const btn = $('ep-save'); btn.disabled = true;
+    const { error } = await sb.from('peminjaman').update({
+        nama, judul, jumlah, tgl_pinjam: tglPinjam, tgl_kembali: tglKembali,
+        kelas: $('ep-kelas').value.trim().toUpperCase().replace(/\s+/g, ' '),
+        no_buku: $('ep-nobuku').value.trim(), catatan: $('ep-catatan').value.trim()
+    }).eq('id', id);
+    btn.disabled = false;
+    if (error) return err('Gagal menyimpan: ' + (error.message || 'terjadi kesalahan'));
+    closeModal('editPmModal');
+    toast('Data peminjaman diperbarui', 'ok');
     loadPeminjaman();
+});
+
+let returnId = null;
+function kembalikanBuku(id) {
+    const p = state.pm.find(x => x.id === id);
+    if (!p || sudahKembali(p)) return;
+    returnId = id;
+    $('rm-info').innerHTML = `<b>${esc(p.judul)}</b><br><span class="text-slate-600">${esc(namaTampil(p.nama))} · ${esc(p.kelas || '-')} · dipinjam ${tglIndo(p.tgl_pinjam)}</span>`;
+    $('rm-tgl').value = todayDMY();
+    $('rm-error').classList.add('hidden');
+    openModal('returnModal');
+    setTimeout(() => $('rm-tgl').focus(), 60);
 }
+$('rm-tgl').addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); $('rm-save').click(); } });
+$('rm-save').addEventListener('click', async () => {
+    const p = state.pm.find(x => x.id === returnId);
+    if (!p || sudahKembali(p)) return closeModal('returnModal');
+    const err = (m) => { $('rm-error').textContent = m; $('rm-error').classList.remove('hidden'); };
+    const iso = parseDMY($('rm-tgl').value);
+    if (!iso) return err('Tanggal harus berformat dd/mm/yyyy dan valid.');
+    if (iso > todayISO()) return err('Tanggal pengembalian tidak boleh lebih dari hari ini.');
+    const tp = normTgl(p.tgl_pinjam);
+    if (tp && iso < tp) return err(`Tidak boleh sebelum tanggal pinjam (${tglIndo(p.tgl_pinjam)}).`);
+    const btn = $('rm-save'); btn.disabled = true;
+    // Admin: update langsung. Pengunjung biasa: lewat fungsi database kembalikan_buku (lihat supabase-schema.sql)
+    const { error } = state.isAdmin
+        ? await sb.from('peminjaman').update({ tgl_kembali: iso }).eq('id', returnId)
+        : await sb.rpc('kembalikan_buku', { p_id: returnId, p_tgl: iso });
+    btn.disabled = false;
+    if (error) return err('Gagal menyimpan: ' + (error.message || 'terjadi kesalahan'));
+    closeModal('returnModal');
+    toast(`Buku dikembalikan pada ${tglIndo(iso)}`, 'ok');
+    p.tgl_kembali = iso; renderPeminjaman(); renderStats(); renderRecent(); renderKelasStats();
+    loadPeminjaman();
+});
 
 // ==================== DROPDOWN KELAS (ketik -> pilih) ====================
 // Ubah/tambah jurusan di sini. Hasil: X AKUNTANSI, XI AKUNTANSI, XII AKUNTANSI, dst.
 const TINGKAT = ['X', 'XI', 'XII'];
-const JURUSAN = ['AKUNTANSI', 'PEMASARAN', 'FARMASI', 'BDP'];
-const KELAS_LIST = TINGKAT.flatMap(t => JURUSAN.map(j => `${t} ${j}`)).concat(['GURU', 'STAFF']);
+const JURUSAN = ['AKUNTANSI', 'BDP', 'FARMASI', 'TJKT','RPL', 'TSM', 'KEPERAWATAN', 'ACP'];
+const KELAS_LIST = TINGKAT.flatMap(t => JURUSAN.map(j => `${t} ${j}`)).concat(['GURU', 'KARYAWAN']);
 
-(function initKelasCombobox() {
-    const inp = $('pm-kelas'), box = $('pm-kelas-list');
+function initKelasCombobox(inpId, boxId) {
+    const inp = $(inpId), box = $(boxId);
     let items = [], idx = -1;
     const close = () => { box.classList.add('hidden'); inp.setAttribute('aria-expanded', 'false'); idx = -1; };
     const pilih = (v) => { inp.value = v; close(); };
@@ -1055,7 +1240,9 @@ const KELAS_LIST = TINGKAT.flatMap(t => JURUSAN.map(j => `${t} ${j}`)).concat(['
         if (!it) return;
         e.preventDefault(); pilih(it.dataset.v);
     });
-})();
+}
+initKelasCombobox('pm-kelas', 'pm-kelas-list');
+initKelasCombobox('ep-kelas', 'ep-kelas-list');
 
 // ==================== STATISTIK KELAS (DASBOR) ====================
 function renderKelasStats() {
@@ -1082,9 +1269,48 @@ function renderKelasStats() {
         </div>`).join('');
 }
 
+// ==================== RESET DATA (ADMIN) ====================
+const RESET_TBL = ['inventaris', 'peminjaman', 'pengajuan'];
+function resetUI() {
+    const any = RESET_TBL.some(t => $('rs-' + t).checked);
+    $('rs-go').disabled = !(any && $('rs-confirm').value.trim().toUpperCase() === 'HAPUS');
+}
+document.addEventListener('click', (e) => {
+    const b = e.target.closest('[data-reset]');
+    if (!b || !state.isAdmin) return;
+    const w = b.dataset.reset;
+    RESET_TBL.forEach(t => { $('rs-' + t).checked = (w === t); });
+    $('rs-n-inventaris').textContent = fmt(state.inv.length) + ' eksemplar';
+    $('rs-n-peminjaman').textContent = fmt(state.pm.length) + ' data';
+    $('rs-n-pengajuan').textContent = fmt(state.pg.length) + ' data';
+    $('rs-confirm').value = ''; $('rs-error').classList.add('hidden'); resetUI();
+    openModal('resetModal');
+});
+RESET_TBL.forEach(t => $('rs-' + t).addEventListener('change', resetUI));
+$('rs-confirm').addEventListener('input', resetUI);
+$('rs-go').addEventListener('click', async () => {
+    if (!state.isAdmin) return;
+    const pilih = RESET_TBL.filter(t => $('rs-' + t).checked);
+    if (!pilih.length || $('rs-confirm').value.trim().toUpperCase() !== 'HAPUS') return;
+    const btn = $('rs-go'); btn.disabled = true;
+    try {
+        for (const t of pilih) {
+            const { error } = await sb.from(t).delete().gt('id', 0);
+            if (error) throw error;
+        }
+        closeModal('resetModal');
+        toast('Data dikosongkan: ' + pilih.join(', '), 'ok', 5000);
+        await Promise.all([loadInventaris(), loadPeminjaman(), loadPengajuan()]);
+    } catch (err) {
+        $('rs-error').textContent = 'Gagal menghapus: ' + (err.message || 'terjadi kesalahan');
+        $('rs-error').classList.remove('hidden');
+        btn.disabled = false;
+    }
+});
+
 // ==================== INIT ====================
 (async function init() {
-    $('pm-tgl').value = todayISO();
+    $('pm-tgl').value = todayDMY();
     updateOpenBadge(); setInterval(updateOpenBadge, 60000);
     showPage(location.hash.slice(1) || 'dashboard');
 
