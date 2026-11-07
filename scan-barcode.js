@@ -19,13 +19,16 @@
     "9786232666818": "SEJARAH X",
     "9786022443216": "PKN X",
     "9786232666818": "BAHASA INDONESIA X",
+    "9786232666832": "BAHASA INDONESIA X",
     "9786231800497": "PKN XI",
     "9786238680153": "BAHASA ARAB XI",
     "9786233289900": "BISNIS DIGITAL XI",
     "9786238680023": "AL ISLAM XII",
+    "9786238680016": "AL ISLAM XI",
     "9786235223094": "BAHASA INDONESIA XI (NEW COVER)",
     "9786232666924": "BAHASA INDONESIA XI (OLD COVER)",
     "9786238680160": "BAHASA ARAB XII",
+    "9786238680023": "BAHASA ARAB XII",
     "9786231802422": "SENI RUPA X",
     "9786231804365": "SENI MUSIK X",
     "9786233289788": "ASISTEN KEPERAWATAN DAN CAREGIVER XI",
@@ -94,7 +97,7 @@
             scanCard.classList.toggle('hidden', !scan);
             bM.className = 'btn btn-sm ' + (scan ? 'btn-ghost !border-transparent' : 'btn-primary');
             bS.className = 'btn btn-sm ' + (scan ? 'btn-primary' : 'btn-ghost !border-transparent');
-            if (scan) { $('pm-tgl').value = todayISO(); fokus(); }
+            if (scan) { $('pm-tgl').value = todayDMY(); fokus(); }
         }
         bM.addEventListener('click', () => setMode(false));
         bS.addEventListener('click', () => setMode(true));
@@ -107,7 +110,7 @@
             inp.value = '';
             if (!kode) return;
             $('pm-nobuku').value = kode;
-            $('pm-tgl').value = todayISO();
+            $('pm-tgl').value = todayDMY();
             const buku = cariBuku(kode);
             if (!buku) {
                 $('pm-judul').value = '';
@@ -115,7 +118,7 @@
                 return $('pm-judul').focus();
             }
             $('pm-judul').value = buku.judul;
-            const pinjam = state.pm.find(p => !p.tgl_kembali && kunci(p.no_buku) === kunci(kode));
+            const pinjam = state.pm.find(p => !sudahKembali(p) && kunci(p.no_buku) === kunci(kode));
             if (pinjam) status(`Ditemukan: ${buku.judul} — perhatian: masih tercatat dipinjam ${namaTampil(pinjam.nama)}`, 'warn');
             else status(`Ditemukan: ${buku.judul}`, 'ok');
             $('pm-nama').focus();
@@ -128,7 +131,7 @@
         // Setelah tersimpan -> siap scan buku berikutnya
         document.addEventListener('pm:saved', () => {
             if (scanCard.classList.contains('hidden')) return;
-            $('pm-tgl').value = todayISO();
+            $('pm-tgl').value = todayDMY();
             status('Menunggu scan…');
             fokus();
         });
