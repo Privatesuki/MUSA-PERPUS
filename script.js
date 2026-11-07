@@ -221,6 +221,7 @@ function showPage(name) {
     });
     document.querySelectorAll('.nav-pill').forEach(a => a.classList.toggle('active', a.dataset.nav === name));
     window.scrollTo({ top: 0, behavior: 'smooth' });
+    try { renderTelat(); } catch (_) {}      // ganti tampilan notifikasi: penuh di dasbor, kecil di halaman lain
 }
 document.addEventListener('click', (e) => {
     const a = e.target.closest('[data-nav]');
@@ -680,13 +681,18 @@ async function loadPeminjaman() {
     const { data, error } = await ambilSemua(src);
     if (error) { dbError(error, 'Gagal memuat peminjaman'); return; }
     state.pm = data || [];
-    renderPeminjaman(); renderStats(); renderRecent(); renderKelasStats();
+    renderPeminjaman(); renderStats(); renderRecent(); renderKelasStats(); renderTelat();
 }
 
 function pmTersaring() {
     const q = $('pm-search').value.trim().toLowerCase();
     const st = $('pm-filter').value;
+    const { f, t } = rentangPm();
     return state.pm.filter(p => {
+        if (f || t) {                                   // filter periode tanggal pinjam
+            const tg = normTgl(p.tgl_pinjam);
+            if (!tg || (f && tg < f) || (t && tg > t)) return false;
+        }
         if (st === 'dipinjam' && sudahKembali(p)) return false;
         if (st === 'kembali' && !sudahKembali(p)) return false;
         if (!q) return true;
@@ -697,6 +703,7 @@ function namaTampil(n) { return state.isAdmin ? n : singkatNama(n); }
 
 function renderPeminjaman() {
     const data = pmTersaring();
+    infoRentangPm(data.length);
     const maxHal = Math.max(1, Math.ceil(data.length / state.pmPer));
     if (state.pmPage > maxHal) state.pmPage = maxHal;
     const start = (state.pmPage - 1) * state.pmPer;
@@ -733,8 +740,14 @@ $('pm-refresh').addEventListener('click', async () => { await loadPeminjaman(); 
 $('pm-submit').addEventListener('click', async () => {
     const nama = $('pm-nama').value.trim();
     const judul = $('pm-judul').value.trim();
-    const jumlah = parseInt($('pm-jumlah').value, 10) || 1;
-    if (!nama || !judul) return toast('Nama peminjam dan judul buku wajib diisi', 'err');
+    const jumlah = parseInt($('pm-jumlah').value, 10);
+    const kosong = [];
+    if (!nama) kosong.push(['pm-nama', 'Nama peminjam']);
+    if (!$('pm-kelas').value.trim()) kosong.push(['pm-kelas', 'Kelas / Guru']);
+    if (!judul) kosong.push(['pm-judul', 'Judul buku']);
+    if (!$('pm-jumlah').value.trim() || isNaN(jumlah)) kosong.push(['pm-jumlah', 'Jumlah']);
+    if (!$('pm-tgl').value.trim()) kosong.push(['pm-tgl', 'Tanggal pinjam']);
+    if (kosong.length) return peringatanForm(kosong);
     if (jumlah < 1 || jumlah > 50) return toast('Jumlah harus 1–50', 'err');
     const tglPinjam = parseDMY($('pm-tgl').value);
     if (!tglPinjam) return toast('Tanggal pinjam harus berformat dd/mm/yyyy', 'err');
@@ -1191,7 +1204,7 @@ $('rm-save').addEventListener('click', async () => {
     if (error) return err('Gagal menyimpan: ' + (error.message || 'terjadi kesalahan'));
     closeModal('returnModal');
     toast(`Buku dikembalikan pada ${tglIndo(iso)}`, 'ok');
-    p.tgl_kembali = iso; renderPeminjaman(); renderStats(); renderRecent(); renderKelasStats();
+    p.tgl_kembali = iso; renderPeminjaman(); renderStats(); renderRecent(); renderKelasStats(); renderTelat();
     loadPeminjaman();
 });
 
@@ -1268,6 +1281,104 @@ function renderKelasStats() {
             <div class="bar-track"><div class="bar-fill" style="width:${Math.max(4, o.n / max * 100).toFixed(1)}%"></div></div>
         </div>`).join('');
 }
+
+// ==================== FILTER PERIODE PEMINJAMAN ====================
+function addHari(iso, n) {
+    const d = new Date(Date.UTC(+iso.slice(0, 4), +iso.slice(5, 7) - 1, +iso.slice(8, 10)));
+    d.setUTCDate(d.getUTCDate() + n);
+    return d.toISOString().slice(0, 10);
+}
+function selisihHari(a, b) {      // jumlah hari dari tanggal a ke b (ISO), aman dari selisih zona waktu
+    const u = (s) => Date.UTC(+s.slice(0, 4), +s.slice(5, 7) - 1, +s.slice(8, 10));
+    return Math.round((u(b) - u(a)) / 86400000);
+}
+function rentangPm() {
+    let f = parseDMY($('pm-from').value), t = parseDMY($('pm-to').value);
+    if (f && t && f > t) [f, t] = [t, f];            // urutan terbalik dibetulkan otomatis
+    return { f, t };
+}
+function infoRentangPm(n) {
+    const { f, t } = rentangPm();
+    $('pm-range-info').textContent = (f || t) ? `${fmt(n)} data · ${f ? isoToDMY(f) : '…'} – ${t ? isoToDMY(t) : '…'}` : '';
+}
+['pm-from', 'pm-to'].forEach(id => $(id).addEventListener('input', () => { state.pmPage = 1; renderPeminjaman(); }));
+document.querySelectorAll('[data-range]').forEach(b => b.addEventListener('click', () => {
+    const k = b.dataset.range, t = todayISO();
+    const [f, e] = k === 'today' ? [t, t] : k === '7' ? [addHari(t, -6), t] : k === '30' ? [addHari(t, -29), t] : ['', ''];
+    $('pm-from').value = isoToDMY(f); $('pm-to').value = isoToDMY(e);
+    state.pmPage = 1; renderPeminjaman();
+}));
+
+// ==================== POPUP PERINGATAN FORM KOSONG ====================
+function peringatanForm(kosong) {
+    $('al-list').innerHTML = kosong.map(([, label]) => `<li><i class="fa-solid fa-circle-exclamation"></i> ${esc(label)}</li>`).join('');
+    kosong.forEach(([id]) => {
+        const el = $(id);
+        el.classList.add('invalid');
+        el.addEventListener('input', () => el.classList.remove('invalid'), { once: true });
+    });
+    state.alertFokus = kosong[0][0];
+    openModal('alertModal');
+    setTimeout(() => $('al-ok').focus(), 60);
+}
+$('al-ok').addEventListener('click', () => {
+    closeModal('alertModal');
+    const el = $(state.alertFokus); if (el) el.focus();
+});
+
+// ==================== NOTIFIKASI BERJALAN: TERLAMBAT > 3 HARI ====================
+const BATAS_TELAT_HARI = 3;          // ubah angka ini bila batas keterlambatan berubah
+const GANTI_TELAT_MS = 5000;         // jeda pergantian pesan (milidetik)
+let telatList = [], telatIdx = 0, telatTimer = null, telatJeda = false;
+
+function daftarTelat() {
+    const hariIni = todayISO();
+    return state.pm.filter(p => !sudahKembali(p))
+        .map(p => { const t = normTgl(p.tgl_pinjam); return t ? { p, t, hari: selisihHari(t, hariIni) } : null; })
+        .filter(x => x && x.hari > BATAS_TELAT_HARI)
+        .sort((a, b) => b.hari - a.hari);            // yang paling lama tampil dulu
+}
+function tampilTelat() {
+    const it = telatList[telatIdx], el = $('telatText');
+    el.innerHTML = `${esc(namaTampil(it.p.nama))}, ${esc(it.p.kelas || '-')}, ${esc(it.p.judul)}, tidak dikembalikan sejak ${tglIndo(it.t)} <span class="telat-days">${it.hari} hari</span>`;
+    el.classList.remove('telat-in'); void el.offsetWidth; el.classList.add('telat-in');
+    $('telatPos').textContent = `${telatIdx + 1}/${telatList.length}`;
+}
+const onDashboard = () => !$('page-dashboard').classList.contains('hidden');
+function itemTelatHTML(x) {
+    return `<span class="telat-item"><b>${esc(namaTampil(x.p.nama))}</b>, ${esc(x.p.kelas || '-')}, ${esc(x.p.judul)}, tidak dikembalikan sejak ${tglIndo(x.t)} <span class="telat-days">${x.hari} hari</span></span>`;
+}
+function bangunMarquee() {            // teks berjalan kanan -> kiri, memutar SEMUA buku terlambat
+    const grup = `<div class="telat-group">${telatList.map(itemTelatHTML).join('')}</div>`;
+    const track = $('telatTrack');
+    track.innerHTML = grup + grup.replace('class="telat-group"', 'class="telat-group" aria-hidden="true"');
+    const huruf = telatList.reduce((n, x) => n + String(x.p.nama).length + String(x.p.kelas || '').length + String(x.p.judul).length + 48, 0);
+    track.style.animationDuration = Math.max(20, huruf * 0.12) + 's';     // makin banyak teks, makin lama satu putaran
+}
+function renderTelat() {
+    telatList = daftarTelat();
+    clearInterval(telatTimer);
+    const bar = $('telatBar'), ok = $('telatOk'), dash = onDashboard();
+    document.body.classList.toggle('telat-on', telatList.length > 0);
+    document.body.classList.toggle('telat-mini', telatList.length > 0 && !dash);
+    if (!telatList.length) { bar.classList.add('hidden'); ok.classList.remove('hidden'); return; }
+    ok.classList.add('hidden'); bar.classList.remove('hidden');
+    bar.classList.toggle('telat-full', dash); bar.classList.toggle('telat-compact', !dash);
+    $('telatCount').textContent = `${telatList.length} buku terlambat`;
+    if (!dash) return bangunMarquee();                  // halaman lain: tampilan kecil + teks berjalan
+    telatIdx = Math.min(telatIdx, telatList.length - 1); // dasbor: tampilan penuh, bergantian
+    $('telatPrev').style.visibility = $('telatNext').style.visibility = $('telatPos').style.visibility = telatList.length > 1 ? 'visible' : 'hidden';
+    tampilTelat();
+    if (telatList.length > 1) telatTimer = setInterval(() => {
+        if (telatJeda || document.hidden) return;
+        telatIdx = (telatIdx + 1) % telatList.length; tampilTelat();
+    }, GANTI_TELAT_MS);
+}
+$('telatPrev').addEventListener('click', () => { if (telatList.length) { telatIdx = (telatIdx - 1 + telatList.length) % telatList.length; tampilTelat(); } });
+$('telatNext').addEventListener('click', () => { if (telatList.length) { telatIdx = (telatIdx + 1) % telatList.length; tampilTelat(); } });
+$('telatBar').addEventListener('mouseenter', () => { telatJeda = true; });      // jeda saat kursor di atas notifikasi
+$('telatBar').addEventListener('mouseleave', () => { telatJeda = false; });
+setInterval(renderTelat, 10 * 60 * 1000);                                        // hitung ulang (mis. saat pergantian hari)
 
 // ==================== RESET DATA (ADMIN) ====================
 const RESET_TBL = ['inventaris', 'peminjaman', 'pengajuan'];
