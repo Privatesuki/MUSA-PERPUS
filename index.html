@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MUSA PERPUS</title>
+    <meta name="color-scheme" content="light dark">
+    <meta name="theme-color" content="#f3f8f4" id="metaTema">
+    <script>(function(){try{var t=localStorage.getItem('musa_tema');if(!t)t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
     <link rel="icon" href="./assets/img/logo.png">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -241,6 +244,97 @@
         @media (prefers-reduced-motion: reduce) { .telat-track { animation: none; } .telat-compact .telat-marquee { overflow-x: auto; } }
         @media (prefers-reduced-motion: reduce) { .telat-icon, .telat-text.telat-in, .field.invalid { animation: none; } }
 
+        /* ================= DARK MODE ================= */
+        html[data-theme="dark"] { color-scheme: dark; --bg: #0a120e; --ink: #e4f2e9; --muted: #9db3a6; --glass: rgba(19,33,26,.80); --line: rgba(134,239,172,.16);
+            --g900: #bbf7d0; --g800: #86efac; --g700: #4ade80; --g600: #22c55e; --g500: #22c55e; --g100: rgba(34,197,94,.18); --g50: rgba(34,197,94,.10); }
+        html.tema-anim, html.tema-anim *, html.tema-anim *::before, html.tema-anim *::after {
+            transition-property: background-color, color, border-color, box-shadow, fill, stroke !important; transition-duration: .35s !important; transition-timing-function: ease !important; }
+        html[data-theme="dark"] .aurora { background: radial-gradient(1100px 560px at 8% -10%, rgba(22,163,74,.20), transparent 60%), radial-gradient(900px 500px at 100% 5%, rgba(132,204,22,.10), transparent 60%), linear-gradient(180deg, #08100c, var(--bg)); }
+        html[data-theme="dark"] .blob { opacity: .14; }
+        html[data-theme="dark"] .glass { box-shadow: 0 10px 30px -14px rgba(0,0,0,.7), inset 0 1px 0 rgba(255,255,255,.05); }
+        html[data-theme="dark"] .btn-ghost, html[data-theme="dark"] .btn-light { background: rgba(255,255,255,.06); border-color: var(--line); color: #d1fae5; }
+        html[data-theme="dark"] .btn-ghost:hover, html[data-theme="dark"] .btn-light:hover { background: rgba(34,197,94,.18); }
+        html[data-theme="dark"] .btn-green { background: rgba(34,197,94,.18); border-color: rgba(74,222,128,.4); color: #bbf7d0; }
+        html[data-theme="dark"] .btn-amber { background: rgba(245,158,11,.16); border-color: rgba(251,191,36,.4); color: #fcd34d; }
+        html[data-theme="dark"] .btn-red { background: rgba(244,63,94,.16); border-color: rgba(251,113,133,.4); color: #fda4af; }
+        html[data-theme="dark"] .field { background: rgba(255,255,255,.06); border-color: rgba(134,239,172,.22); color: var(--ink); }
+        html[data-theme="dark"] .field::placeholder { color: #6f8678; }
+        html[data-theme="dark"] .field[readonly], html[data-theme="dark"] .field-lock { background: rgba(255,255,255,.04) !important; color: var(--muted); }
+        html[data-theme="dark"] select.field option { background: #13211a; color: var(--ink); }
+        html[data-theme="dark"] .nav-pill { color: #b7cdbf; }
+        html[data-theme="dark"] .nav-pill:hover { color: #d1fae5; background: rgba(34,197,94,.16); }
+        html[data-theme="dark"] .nav-pill.active { color: #fff; }
+        html[data-theme="dark"] .tbl thead th { background: #0f3d24; }
+        html[data-theme="dark"] .tbl tbody td { border-top-color: var(--line); }
+        html[data-theme="dark"] .tbl tbody tr:hover { background: rgba(34,197,94,.10); }
+        html[data-theme="dark"] .tbl-cards tr { background: rgba(255,255,255,.04); }
+        html[data-theme="dark"] .b-ok   { background: rgba(34,197,94,.18);  color: #bbf7d0; border-color: rgba(74,222,128,.4); }
+        html[data-theme="dark"] .b-warn { background: rgba(245,158,11,.16); color: #fcd34d; border-color: rgba(251,191,36,.4); }
+        html[data-theme="dark"] .b-bad  { background: rgba(244,63,94,.16);  color: #fda4af; border-color: rgba(251,113,133,.4); }
+        html[data-theme="dark"] .b-info { background: rgba(56,189,248,.14); color: #7dd3fc; border-color: rgba(56,189,248,.35); }
+        html[data-theme="dark"] .modal-wrap { background: rgba(0,0,0,.62); }
+        html[data-theme="dark"] .modal-card { background: #13211a !important; box-shadow: 0 30px 70px -20px rgba(0,0,0,.8); }
+        html[data-theme="dark"] .toast, html[data-theme="dark"] .cal-pop, html[data-theme="dark"] .cb-list { background: #13211a; }
+        html[data-theme="dark"] .toast, html[data-theme="dark"] .cb-item, html[data-theme="dark"] .cal-d { color: var(--ink); }
+        html[data-theme="dark"] .cal-d.sel { background: #15803d; color: #fff; }
+        html[data-theme="dark"] .status-btn { background: rgba(245,158,11,.16); color: #fcd34d; border-color: rgba(251,191,36,.4); }
+        html[data-theme="dark"] .status-btn:hover { background: rgba(34,197,94,.2); color: #bbf7d0; border-color: rgba(74,222,128,.45); }
+        html[data-theme="dark"] .bar-track { background: rgba(255,255,255,.10); }
+        html[data-theme="dark"] .telat-ok { background: rgba(34,197,94,.14); border-color: rgba(74,222,128,.4); color: #bbf7d0; }
+        html[data-theme="dark"] .al-list li { background: rgba(244,63,94,.14); color: #fda4af; }
+        html[data-theme="dark"] ::-webkit-scrollbar-thumb { background: #2d4a3a; }
+        /* kelas utilitas Tailwind yang dipakai di halaman */
+        html[data-theme="dark"] .text-emerald-950, html[data-theme="dark"] .text-emerald-900, html[data-theme="dark"] .text-emerald-800 { color: #e6f4ea; }
+        html[data-theme="dark"] .hover\:text-emerald-900:hover { color: #fff; }
+        html[data-theme="dark"] .text-emerald-600, html[data-theme="dark"] .text-emerald-700, html[data-theme="dark"] .text-green-700, html[data-theme="dark"] .text-lime-700 { color: #4ade80; }
+        html[data-theme="dark"] .text-slate-600 { color: #b4c7bb; }
+        html[data-theme="dark"] .text-slate-500 { color: #9db3a6; }
+        html[data-theme="dark"] .text-slate-400 { color: #7f9488; }
+        html[data-theme="dark"] .text-rose-500, html[data-theme="dark"] .text-rose-600, html[data-theme="dark"] .text-rose-700 { color: #fb7185; }
+        html[data-theme="dark"] .text-amber-600, html[data-theme="dark"] .text-amber-700, html[data-theme="dark"] .text-amber-900 { color: #fbbf24; }
+        html[data-theme="dark"] .bg-white, html[data-theme="dark"] .bg-white\/70 { background-color: #14231b; }
+        html[data-theme="dark"] .bg-emerald-50, html[data-theme="dark"] .bg-emerald-50\/50, html[data-theme="dark"] .bg-emerald-100, html[data-theme="dark"] .hover\:bg-emerald-100:hover { background-color: rgba(34,197,94,.14); }
+        html[data-theme="dark"] .bg-rose-50\/60 { background-color: rgba(244,63,94,.12); }
+        html[data-theme="dark"] .bg-rose-100 { background-color: rgba(244,63,94,.2); }
+        html[data-theme="dark"] .bg-amber-50, html[data-theme="dark"] .bg-amber-100, html[data-theme="dark"] .bg-lime-100 { background-color: rgba(245,158,11,.16); }
+        html[data-theme="dark"] .border-emerald-900\/10, html[data-theme="dark"] .border-emerald-900\/5 { border-color: var(--line); }
+        html[data-theme="dark"] .border-rose-200 { border-color: rgba(244,63,94,.35); }
+        html[data-theme="dark"] .border-amber-300 { border-color: rgba(251,191,36,.4); }
+
+        /* ================= MENU TITIK TIGA (HP/iPad) ================= */
+        .mobile-menu { position: absolute; left: .75rem; right: .75rem; top: calc(100% + .35rem); z-index: 50; padding: .55rem; display: grid; gap: .15rem; animation: pop .22s cubic-bezier(.2,.9,.3,1.2) both; }
+        .mobile-menu .nav-pill { width: 100%; justify-content: flex-start; border-radius: .85rem; padding: .7rem .9rem; }
+        @media (min-width: 640px) { .mobile-menu { left: 1.5rem; right: 1.5rem; } }
+        #themeBtn i { transition: transform .5s cubic-bezier(.2,.9,.3,1.2); }
+        #themeBtn:active i { transform: rotate(180deg) scale(.8); }
+
+        /* ================= RATING, POPULER, USULAN ================= */
+        .stars { display: inline-flex; gap: .12rem; font-size: .85rem; } .stars.sm { font-size: .7rem; }
+        .star { color: #f59e0b; } .star-off { color: #c3d0c7; }
+        html[data-theme="dark"] .star-off { color: #3a4f43; }
+        .star-btn { font-size: 1.7rem; line-height: 1; color: #c3d0c7; transition: transform .15s, color .15s; }
+        html[data-theme="dark"] .star-btn { color: #3a4f43; }
+        .star-btn.on { color: #f59e0b; } .star-btn:hover { transform: scale(1.18); }
+        .pop-rank { flex: none; width: 2.3rem; height: 2.3rem; border-radius: .85rem; display: grid; place-items: center; font-weight: 800; color: #fff; background: linear-gradient(135deg, #14532d, #15803d); }
+        .pop-rank.r1 { background: linear-gradient(135deg, #d97706, #fbbf24); } .pop-rank.r2 { background: linear-gradient(135deg, #64748b, #cbd5e1); } .pop-rank.r3 { background: linear-gradient(135deg, #b45309, #f59e0b); }
+        .rv-item, .kom-item { border-top: 1px dashed var(--line); padding: .6rem 0; }
+        .seg { display: inline-flex; padding: .2rem; gap: .2rem; border-radius: 999px; border: 1px solid var(--line); background: var(--glass); }
+        .seg button { padding: .38rem .95rem; border-radius: 999px; font-size: .78rem; font-weight: 700; color: var(--muted); transition: background .2s, color .2s; }
+        .seg button.on { background: linear-gradient(135deg, #14532d, #15803d); color: #fff; }
+        .suka-btn { display: inline-flex; align-items: center; gap: .4rem; padding: .38rem .85rem; border-radius: 999px; border: 1px solid var(--line); background: var(--glass); font-size: .78rem; font-weight: 700; color: var(--muted); transition: background .2s, color .2s, border-color .2s, transform .15s; }
+        .suka-btn:hover { transform: translateY(-1px); border-color: rgba(22,163,74,.5); }
+        .suka-btn.on { background: #ffe4e6; color: #e11d48; border-color: #fda4af; }
+        html[data-theme="dark"] .suka-btn.on { background: rgba(244,63,94,.18); color: #fda4af; border-color: rgba(251,113,133,.45); }
+        .suka-btn.on i { animation: pop .35s cubic-bezier(.2,.9,.3,1.2); }
+        .us-card { padding: 1rem; border-radius: 1rem; border: 1px solid var(--line); background: var(--glass); }
+
+        /* ================= KAMERA SCAN ================= */
+        .cam-box { position: relative; border-radius: 1rem; overflow: hidden; background: #000; aspect-ratio: 4 / 3; }
+        .cam-box video { width: 100%; height: 100%; object-fit: cover; }
+        .cam-frame { position: absolute; inset: 24% 8%; border: 2px solid rgba(74,222,128,.95); border-radius: .8rem; box-shadow: 0 0 0 999px rgba(0,0,0,.38); }
+        .cam-frame::after { content: ''; position: absolute; left: 4%; right: 4%; top: 8%; height: 2px; background: #ef4444; box-shadow: 0 0 8px #ef4444; animation: camline 1.8s ease-in-out infinite alternate; }
+        @keyframes camline { to { top: 90%; } }
+
         /* ---------- Combobox kelas ---------- */
         .cb-list { position: absolute; z-index: 30; left: 0; right: 0; top: calc(100% + 4px); max-height: 250px; overflow-y: auto; background: #fff;
             border: 1px solid var(--line); border-radius: .85rem; box-shadow: 0 16px 36px -14px rgba(15,61,36,.45); padding: .3rem; }
@@ -310,18 +404,31 @@
                 </span>
             </a>
 
-            <nav class="flex-1 flex gap-1 overflow-x-auto" id="mainNav">
+            <nav class="flex-1 hidden lg:flex gap-1 overflow-x-auto" id="mainNav">
                 <a href="#dashboard"  class="nav-pill" data-nav="dashboard"><i class="fa-solid fa-house"></i><span>Dashboard</span></a>
                 <a href="#inventaris" class="nav-pill" data-nav="inventaris"><i class="fa-solid fa-barcode"></i><span>Inventaris</span></a>
                 <a href="#peminjaman" class="nav-pill" data-nav="peminjaman"><i class="fa-solid fa-book-reader"></i><span>Peminjaman</span></a>
                 <a href="#pengajuan"  class="nav-pill" data-nav="pengajuan"><i class="fa-solid fa-clipboard-list"></i><span>Pengajuan</span></a>
+                <a href="#populer"    class="nav-pill" data-nav="populer"><i class="fa-solid fa-fire"></i><span>Populer</span></a>
+                <a href="#siswa"      class="nav-pill admin-only hidden" data-nav="siswa"><i class="fa-solid fa-id-card"></i><span>Data Siswa</span></a>
                 <a href="#cetak"      class="nav-pill" data-nav="cetak"><i class="fa-solid fa-print"></i><span>Cetak Punggung</span></a>
             </nav>
 
-            <div class="flex items-center gap-2 shrink-0">
+            <div class="flex items-center gap-2 shrink-0 ml-auto lg:ml-0">
                 <span id="adminBadge" class="badge b-ok hidden"><i class="fa-solid fa-shield-halved"></i> Admin</span>
-                <button id="authBtn" class="btn btn-ghost btn-sm sm:text-xs"><i class="fa-solid fa-right-to-bracket"></i><span id="authLabel">Login Admin</span></button>
+                <button id="themeBtn" type="button" class="btn btn-ghost btn-sm" aria-label="Ganti tema terang/gelap" title="Tema terang / gelap"><i class="fa-solid fa-moon"></i></button>
+                <button id="authBtn" class="btn btn-ghost btn-sm sm:text-xs"><i class="fa-solid fa-right-to-bracket"></i><span id="authLabel" class="max-[420px]:hidden">Login Admin</span></button>
+                <button id="menuBtn" type="button" class="btn btn-ghost btn-sm lg:hidden" aria-label="Buka menu" aria-expanded="false" aria-controls="mobileMenu"><i class="fa-solid fa-ellipsis-vertical"></i></button>
             </div>
+        </div>
+        <div id="mobileMenu" class="mobile-menu glass hidden lg:hidden" role="menu">
+            <a href="#dashboard"  class="nav-pill" data-nav="dashboard"><i class="fa-solid fa-house w-5 text-center"></i><span>Dashboard</span></a>
+            <a href="#inventaris" class="nav-pill" data-nav="inventaris"><i class="fa-solid fa-barcode w-5 text-center"></i><span>Inventaris</span></a>
+            <a href="#peminjaman" class="nav-pill" data-nav="peminjaman"><i class="fa-solid fa-book-reader w-5 text-center"></i><span>Peminjaman</span></a>
+            <a href="#pengajuan"  class="nav-pill" data-nav="pengajuan"><i class="fa-solid fa-clipboard-list w-5 text-center"></i><span>Pengajuan</span></a>
+            <a href="#populer"    class="nav-pill" data-nav="populer"><i class="fa-solid fa-fire w-5 text-center"></i><span>Buku Populer</span></a>
+            <a href="#siswa"      class="nav-pill admin-only hidden" data-nav="siswa"><i class="fa-solid fa-id-card w-5 text-center"></i><span>Data Siswa</span></a>
+            <a href="#cetak"      class="nav-pill" data-nav="cetak"><i class="fa-solid fa-print w-5 text-center"></i><span>Cetak Punggung</span></a>
         </div>
     </header>
 
@@ -592,6 +699,15 @@
                 <div class="flex justify-end mt-5"><button id="pg-submit" class="btn btn-primary"><i class="fa-solid fa-paper-plane"></i> Kirim Pengajuan</button></div>
             </div>
 
+            <div class="glass p-5 sm:p-6" id="usulanWrap">
+                <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
+                    <h3 class="font-bold flex items-center gap-2 text-emerald-950"><i class="fa-solid fa-heart text-rose-500"></i> Usulan Buku dari Teman</h3>
+                    <span class="text-xs text-slate-500">Tekan <b>Suka</b> untuk mendukung usulan, dan tulis komentar singkat.</span>
+                </div>
+                <div id="usulan-list" class="grid gap-3 md:grid-cols-2"></div>
+                <div class="text-center mt-4"><button id="usulan-more" type="button" class="btn btn-ghost btn-sm hidden"></button></div>
+            </div>
+
             <div class="glass overflow-hidden">
                 <div class="p-4 border-b border-emerald-900/10 flex flex-wrap items-center gap-3">
                     <div class="relative flex-1 min-w-[220px]">
@@ -607,6 +723,54 @@
                         </tr></thead>
                         <tbody id="pg-tbody"></tbody>
                     </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= BUKU POPULER ================= -->
+        <section id="page-populer" class="page space-y-5 hidden">
+            <div class="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                    <h2 class="text-2xl font-extrabold text-emerald-950">Buku Terpopuler</h2>
+                    <p class="text-sm text-slate-500">Buku yang paling sering dipinjam. Beri bintang dan ulasan singkat untuk teman sekelasmu!</p>
+                </div>
+                <div class="seg" id="pop-seg"><button type="button" data-per="bulan" class="on">Bulan ini</button><button type="button" data-per="semua">Semua waktu</button></div>
+            </div>
+            <div id="pop-list" class="grid gap-4 lg:grid-cols-2"></div>
+        </section>
+
+        <!-- ================= DATA SISWA (ADMIN) ================= -->
+        <section id="page-siswa" class="page space-y-5 hidden">
+            <div class="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                    <h2 class="text-2xl font-extrabold text-emerald-950">Data Siswa &amp; Kartu Anggota</h2>
+                    <p class="text-sm text-slate-500">Scan NIS di kartu pelajar akan mengisi nama dan kelas otomatis di form peminjaman.</p>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                    <input type="file" id="siswa-file" class="hidden" accept=".xlsx,.xls">
+                    <button id="siswa-add" class="btn btn-primary admin-only hidden"><i class="fa-solid fa-plus"></i> Tambah Siswa</button>
+                    <button id="siswa-import" class="btn btn-green admin-only hidden"><i class="fa-solid fa-file-import"></i> Import Excel</button>
+                    <button id="siswa-export" class="btn btn-amber admin-only hidden"><i class="fa-solid fa-file-export"></i> Export Excel</button>
+                    <button id="siswa-clear" class="btn btn-red admin-only hidden"><i class="fa-solid fa-trash-can"></i> Kosongkan Data</button>
+                </div>
+            </div>
+            <div id="siswa-guard" class="glass p-8 text-center text-sm text-slate-500"><i class="fa-solid fa-lock text-2xl text-emerald-600 mb-3 block"></i>Halaman ini khusus admin. Silakan login admin untuk melihat data siswa.</div>
+            <div id="siswa-body" class="hidden space-y-4">
+                <div class="glass p-4 text-xs text-slate-500 leading-relaxed"><b class="text-emerald-950">Format Excel:</b> baris pertama berisi judul kolom <b>NIS</b>, <b>Nama</b>, <b>Kelas</b>. NIS yang sama akan diperbarui, bukan digandakan. NIS hanya terlihat oleh admin.</div>
+                <div class="glass overflow-hidden">
+                    <div class="p-4 border-b border-emerald-900/10 flex flex-wrap items-center gap-3">
+                        <div class="relative flex-1 min-w-[220px]">
+                            <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                            <input id="siswa-search" class="field !pl-9" placeholder="Cari NIS, nama, atau kelas…">
+                        </div>
+                        <span id="siswa-info" class="text-xs text-slate-500"></span>
+                    </div>
+                    <div class="overflow-auto max-h-[60vh]">
+                        <table class="tbl">
+                            <thead><tr><th>NIS</th><th>Nama</th><th>Kelas</th><th class="text-center">Aksi</th></tr></thead>
+                            <tbody id="siswa-tbody"></tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </section>
@@ -782,6 +946,7 @@
                 <label class="flex items-center gap-3 p-3 rounded-xl border border-rose-200 bg-rose-50/60 text-sm font-semibold"><input type="checkbox" id="rs-inventaris" class="accent-red-600 w-4 h-4"> <span class="flex-1">Inventaris</span><span id="rs-n-inventaris" class="text-xs text-slate-500"></span></label>
                 <label class="flex items-center gap-3 p-3 rounded-xl border border-rose-200 bg-rose-50/60 text-sm font-semibold"><input type="checkbox" id="rs-peminjaman" class="accent-red-600 w-4 h-4"> <span class="flex-1">Peminjaman</span><span id="rs-n-peminjaman" class="text-xs text-slate-500"></span></label>
                 <label class="flex items-center gap-3 p-3 rounded-xl border border-rose-200 bg-rose-50/60 text-sm font-semibold"><input type="checkbox" id="rs-pengajuan" class="accent-red-600 w-4 h-4"> <span class="flex-1">Pengajuan</span><span id="rs-n-pengajuan" class="text-xs text-slate-500"></span></label>
+                <label class="flex items-center gap-3 p-3 rounded-xl border border-rose-200 bg-rose-50/60 text-sm font-semibold"><input type="checkbox" id="rs-siswa" class="accent-red-600 w-4 h-4"> <span class="flex-1">Data Siswa</span><span id="rs-n-siswa" class="text-xs text-slate-500"></span></label>
             </div>
             <label class="lbl" for="rs-confirm">Ketik HAPUS untuk konfirmasi</label>
             <input id="rs-confirm" class="field" autocomplete="off" autocapitalize="characters" placeholder="HAPUS">
@@ -790,6 +955,65 @@
                 <button data-close="resetModal" class="btn btn-ghost">Batal</button>
                 <button id="rs-go" class="btn btn-red" disabled><i class="fa-solid fa-trash-can"></i> Hapus Data Terpilih</button>
             </div>
+        </div>
+    </div>
+
+    <!-- ================= MODAL ULASAN BUKU ================= -->
+    <div id="rvModal" class="modal-wrap" style="z-index:110">
+        <div class="modal-card glass max-w-md p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h3 id="rv-title" class="text-lg font-extrabold text-emerald-950">Tulis Ulasan</h3>
+                <button data-close="rvModal" class="text-slate-400 hover:text-emerald-900" aria-label="Tutup"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+            <div id="rv-judul" class="text-sm font-bold rounded-xl bg-emerald-50 border border-emerald-900/10 px-3 py-2 mb-4 break-words"></div>
+            <label class="lbl">Rating <span class="text-rose-500">*</span></label>
+            <div id="rv-stars" class="flex gap-1 mb-4" role="radiogroup" aria-label="Rating bintang">
+                <button type="button" class="star-btn" data-v="1" aria-label="1 bintang">★</button><button type="button" class="star-btn" data-v="2" aria-label="2 bintang">★</button><button type="button" class="star-btn" data-v="3" aria-label="3 bintang">★</button><button type="button" class="star-btn" data-v="4" aria-label="4 bintang">★</button><button type="button" class="star-btn" data-v="5" aria-label="5 bintang">★</button>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+                <div><label class="lbl" for="rv-nama">Nama <span class="text-rose-500">*</span></label><input id="rv-nama" class="field" maxlength="60" placeholder="Namamu"></div>
+                <div class="relative"><label class="lbl" for="rv-kelas">Kelas</label><input id="rv-kelas" class="field" maxlength="60" autocomplete="off" role="combobox" aria-expanded="false" placeholder="Ketik kelasmu"><div id="rv-kelas-list" class="cb-list hidden" role="listbox"></div></div>
+            </div>
+            <label class="lbl" for="rv-teks">Ulasan singkat</label>
+            <textarea id="rv-teks" class="field" rows="3" maxlength="300" placeholder="Seru? Mudah dipahami? Ceritakan singkat…"></textarea>
+            <div class="text-[11px] text-slate-400 text-right mt-1"><span id="rv-count">0</span>/300</div>
+            <p id="rv-error" class="text-xs text-rose-600 mt-2 hidden"></p>
+            <div class="flex justify-end gap-3 mt-4">
+                <button data-close="rvModal" class="btn btn-ghost">Batal</button>
+                <button id="rv-save" class="btn btn-primary"><i class="fa-solid fa-paper-plane"></i> Simpan</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= MODAL TAMBAH / EDIT SISWA (ADMIN) ================= -->
+    <div id="editSiswaModal" class="modal-wrap" style="z-index:110">
+        <div class="modal-card glass max-w-md p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h3 id="es-title" class="text-lg font-extrabold text-emerald-950">Edit Data Siswa</h3>
+                <button data-close="editSiswaModal" class="text-slate-400 hover:text-emerald-900" aria-label="Tutup"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+            <div class="space-y-4">
+                <div><label class="lbl" for="es-nis">NIS / NISN (3–10 digit) <span class="text-rose-500">*</span></label><input id="es-nis" class="field font-mono" inputmode="numeric" maxlength="10" autocomplete="off"></div>
+                <div><label class="lbl" for="es-nama">Nama siswa <span class="text-rose-500">*</span></label><input id="es-nama" class="field" maxlength="100" autocomplete="off"></div>
+                <div class="relative"><label class="lbl" for="es-kelas">Kelas <span class="text-rose-500">*</span></label><input id="es-kelas" class="field" maxlength="60" autocomplete="off" role="combobox" aria-expanded="false" placeholder="Ketik: X, XI, XII atau jurusan…"><div id="es-kelas-list" class="cb-list hidden" role="listbox"></div></div>
+            </div>
+            <p id="es-error" class="text-xs text-rose-600 mt-3 hidden"></p>
+            <div class="flex justify-end gap-3 mt-5">
+                <button data-close="editSiswaModal" class="btn btn-ghost">Batal</button>
+                <button id="es-save" class="btn btn-primary"><i class="fa-solid fa-floppy-disk"></i> Simpan</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= MODAL KAMERA SCAN ================= -->
+    <div id="camModal" class="modal-wrap" style="z-index:140">
+        <div class="modal-card glass max-w-md p-4">
+            <div class="flex items-center justify-between mb-3">
+                <h3 class="text-base font-extrabold text-emerald-950 flex items-center gap-2"><i class="fa-solid fa-camera text-emerald-600"></i> Scan dengan Kamera</h3>
+                <button data-close="camModal" class="text-slate-400 hover:text-emerald-900" aria-label="Tutup"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+            <div class="cam-box"><video id="camVideo" playsinline muted></video><div class="cam-frame"></div></div>
+            <p id="camStatus" class="text-xs text-slate-500 mt-3 text-center">Membuka kamera…</p>
         </div>
     </div>
 
@@ -816,6 +1040,7 @@
     </div>
 
     <script src="script.js"></script>
+    <script src="fitur-baru.js"></script>
     <script src="scan-barcode.js"></script>
 </body>
 </html>

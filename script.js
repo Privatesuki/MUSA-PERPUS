@@ -210,7 +210,7 @@ function animateCount(el, to, from = 0, dur = 1200) {
 }
 
 // ==================== NAVIGASI ====================
-const PAGES = ['dashboard', 'inventaris', 'peminjaman', 'pengajuan', 'cetak'];
+const PAGES = ['dashboard', 'inventaris', 'peminjaman', 'pengajuan', 'populer', 'siswa', 'cetak'];
 function showPage(name) {
     if (!PAGES.includes(name)) name = 'dashboard';
     PAGES.forEach(p => {
@@ -241,6 +241,7 @@ function setAdmin(flag) {
     $('authLabel').textContent = state.isAdmin ? 'Logout' : 'Login Admin';
     $('authBtn').querySelector('i').className = state.isAdmin ? 'fa-solid fa-right-from-bracket' : 'fa-solid fa-right-to-bracket';
     renderInventaris(); renderPeminjaman(); renderPengajuan();
+    document.dispatchEvent(new CustomEvent('admin:changed', { detail: state.isAdmin }));
 }
 $('authBtn').addEventListener('click', async () => {
     if (state.isAdmin) {
@@ -681,7 +682,7 @@ async function loadPeminjaman() {
     const { data, error } = await ambilSemua(src);
     if (error) { dbError(error, 'Gagal memuat peminjaman'); return; }
     state.pm = data || [];
-    renderPeminjaman(); renderStats(); renderRecent(); renderKelasStats(); renderTelat();
+    renderPeminjaman(); renderStats(); renderRecent(); renderKelasStats(); renderTelat(); document.dispatchEvent(new Event('data:pm'));
 }
 
 function pmTersaring() {
@@ -786,6 +787,7 @@ async function loadPengajuan() {
     if (error) { dbError(error, 'Gagal memuat pengajuan'); return; }
     state.pg = data || [];
     renderPengajuan();
+    document.dispatchEvent(new Event('data:pg'));
 }
 const PG_CSS = { Pending: 'b-warn pulse-soft', Diterima: 'b-ok', Ditolak: 'b-bad' };
 
@@ -1204,7 +1206,7 @@ $('rm-save').addEventListener('click', async () => {
     if (error) return err('Gagal menyimpan: ' + (error.message || 'terjadi kesalahan'));
     closeModal('returnModal');
     toast(`Buku dikembalikan pada ${tglIndo(iso)}`, 'ok');
-    p.tgl_kembali = iso; renderPeminjaman(); renderStats(); renderRecent(); renderKelasStats(); renderTelat();
+    p.tgl_kembali = iso; renderPeminjaman(); renderStats(); renderRecent(); renderKelasStats(); renderTelat(); document.dispatchEvent(new Event('data:pm'));
     loadPeminjaman();
 });
 
@@ -1381,7 +1383,7 @@ $('telatBar').addEventListener('mouseleave', () => { telatJeda = false; });
 setInterval(renderTelat, 10 * 60 * 1000);                                        // hitung ulang (mis. saat pergantian hari)
 
 // ==================== RESET DATA (ADMIN) ====================
-const RESET_TBL = ['inventaris', 'peminjaman', 'pengajuan'];
+const RESET_TBL = ['inventaris', 'peminjaman', 'pengajuan', 'siswa'];
 function resetUI() {
     const any = RESET_TBL.some(t => $('rs-' + t).checked);
     $('rs-go').disabled = !(any && $('rs-confirm').value.trim().toUpperCase() === 'HAPUS');
@@ -1394,6 +1396,7 @@ document.addEventListener('click', (e) => {
     $('rs-n-inventaris').textContent = fmt(state.inv.length) + ' eksemplar';
     $('rs-n-peminjaman').textContent = fmt(state.pm.length) + ' data';
     $('rs-n-pengajuan').textContent = fmt(state.pg.length) + ' data';
+    $('rs-n-siswa').textContent = fmt(window.MusaSiswa ? window.MusaSiswa.count() : 0) + ' siswa';
     $('rs-confirm').value = ''; $('rs-error').classList.add('hidden'); resetUI();
     openModal('resetModal');
 });
@@ -1406,9 +1409,12 @@ $('rs-go').addEventListener('click', async () => {
     const btn = $('rs-go'); btn.disabled = true;
     try {
         for (const t of pilih) {
-            const { error } = await sb.from(t).delete().gt('id', 0);
+            const { error } = t === 'siswa'
+                ? await sb.from('siswa').delete().neq('nis', '')      // tabel siswa memakai kolom nis, bukan id
+                : await sb.from(t).delete().gt('id', 0);
             if (error) throw error;
         }
+        if (pilih.includes('siswa')) document.dispatchEvent(new Event('siswa:changed'));
         closeModal('resetModal');
         toast('Data dikosongkan: ' + pilih.join(', '), 'ok', 5000);
         await Promise.all([loadInventaris(), loadPeminjaman(), loadPengajuan()]);
