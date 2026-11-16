@@ -328,6 +328,18 @@
         .suka-btn.on i { animation: pop .35s cubic-bezier(.2,.9,.3,1.2); }
         .us-card { padding: 1rem; border-radius: 1rem; border: 1px solid var(--line); background: var(--glass); }
 
+        /* ================= KARTU DENGAN FOTO (halaman Tentang) ================= */
+        .foto-card { position: relative; overflow: hidden; isolation: isolate; }
+        .foto-card::before { content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+            background: var(--foto) center / cover no-repeat; transition: transform .6s cubic-bezier(.2,.8,.2,1); }
+        .foto-card:hover::before { transform: scale(1.06); }
+        /* foto di separuh kartu: garis miring dari pojok kiri atas ke kanan bawah, lalu memudar */
+        .foto-diag::before { -webkit-mask-image: linear-gradient(to top right, transparent 50%, rgba(0,0,0,.85) 100%);
+            mask-image: linear-gradient(to top right, transparent 50%, rgba(0,0,0,.85) 100%); }
+        /* foto dari sisi kanan kartu, memudar ke kiri */
+        .foto-kanan::before { -webkit-mask-image: linear-gradient(to left, rgba(0,0,0,.9), transparent 75%);
+            mask-image: linear-gradient(to left, rgba(0,0,0,.9), transparent 75%); }
+
         /* ================= KAMERA SCAN ================= */
         .cam-box { position: relative; border-radius: 1rem; overflow: hidden; background: #000; aspect-ratio: 4 / 3; }
         .cam-box video { width: 100%; height: 100%; object-fit: cover; }
@@ -412,6 +424,7 @@
                 <a href="#populer"    class="nav-pill" data-nav="populer"><i class="fa-solid fa-fire"></i><span>Populer</span></a>
                 <a href="#siswa"      class="nav-pill admin-only hidden" data-nav="siswa"><i class="fa-solid fa-id-card"></i><span>Data Siswa</span></a>
                 <a href="#cetak"      class="nav-pill" data-nav="cetak"><i class="fa-solid fa-print"></i><span>Cetak Punggung</span></a>
+                <a href="#tentang"    class="nav-pill" data-nav="tentang"><i class="fa-solid fa-user"></i><span>Tentang</span></a>
             </nav>
 
             <div class="flex items-center gap-2 shrink-0 ml-auto lg:ml-0">
@@ -429,6 +442,7 @@
             <a href="#populer"    class="nav-pill" data-nav="populer"><i class="fa-solid fa-fire w-5 text-center"></i><span>Buku Populer</span></a>
             <a href="#siswa"      class="nav-pill admin-only hidden" data-nav="siswa"><i class="fa-solid fa-id-card w-5 text-center"></i><span>Data Siswa</span></a>
             <a href="#cetak"      class="nav-pill" data-nav="cetak"><i class="fa-solid fa-print w-5 text-center"></i><span>Cetak Punggung</span></a>
+            <a href="#tentang"    class="nav-pill" data-nav="tentang"><i class="fa-solid fa-user w-5 text-center"></i><span>Tentang Developer</span></a>
         </div>
     </header>
 
@@ -815,9 +829,88 @@
                 </div>
             </div>
         </section>
+        <!-- ================= TENTANG DEVELOPER (tidak ada di menu, dibuka dari footer) ================= -->
+        <section id="page-tentang" class="page space-y-6 hidden">
+            <div class="glass p-5 sm:p-8">
+                <div class="grid md:grid-cols-[17rem_1fr] gap-6 sm:gap-8 items-center">
+                    <!-- Foto: simpan fotomu di assets/img/adam.jpg -->
+                    <div class="mx-auto w-56 md:w-full max-w-[17rem]">
+                        <div class="p-1 rounded-[1.75rem]" style="background:linear-gradient(135deg,#14532d,#4ade80,#fde68a)">
+                            <div class="aspect-[4/5] rounded-[1.5rem] overflow-hidden bg-emerald-50 grid place-items-center">
+                                <img src="./assets/img/adam.jpg" alt="Foto Adam Winatra" class="w-full h-full object-cover"
+                                     onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'text-6xl font-extrabold text-emerald-700',textContent:'AW'}))">
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <span class="badge b-ok"><i class="fa-solid fa-code"></i> Developer MUSA PERPUS</span>
+                        <h2 class="mt-3 text-3xl sm:text-4xl font-extrabold tracking-tight text-emerald-950">Adam Winatra</h2>
+                        <p class="text-sm text-slate-500 mt-1">Biasa dipanggil <b class="text-emerald-900">Daw</b> · Founder ADWIN GROUP</p>
+                        <p class="mt-4 text-sm leading-relaxed text-slate-600">
+                            Saya membangun sistem perpustakaan MUSA PERPUS untuk SMK Muhammadiyah 1 Pringsewu: inventaris otomatis, peminjaman dengan scan barcode, pengajuan buku, sampai notifikasi keterlambatan. Selain web, saya suka mengerjakan perangkat IoT dan proyek kreatif lain yang menyatukan kode dengan perangkat nyata.
+                        </p>
+                        <div class="flex flex-wrap gap-2 mt-4">
+                            <span class="badge b-info">HTML · CSS · JavaScript</span>
+                            <span class="badge b-info">Tailwind</span>
+                            <span class="badge b-info">Supabase</span>
+                            <span class="badge b-info">Arduino · ESP32</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <h3 class="font-bold mb-3 flex items-center gap-2 text-emerald-950"><i class="fa-solid fa-building text-emerald-600"></i> Unit Usaha ADWIN GROUP</h3>
+                <div class="grid sm:grid-cols-3 gap-4">
+                    <div class="glass glass-hover foto-card foto-kanan p-5" style="--foto:url('./assets/img/ad-djaya.jpg')">
+                        <span class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 grid place-items-center"><i class="fa-solid fa-store"></i></span>
+                        <h4 class="font-extrabold text-emerald-950 mt-3">AD DJAYA</h4>
+                        <p class="text-xs text-slate-500 mt-1">Retail · sejak 2022</p>
+                    </div>
+                    <div class="glass glass-hover foto-card foto-kanan p-5" style="--foto:url('./assets/img/dtech-hub.jpg')">
+                        <span class="w-10 h-10 rounded-xl bg-amber-100 text-amber-700 grid place-items-center"><i class="fa-solid fa-screwdriver-wrench"></i></span>
+                        <h4 class="font-extrabold text-emerald-950 mt-3">DTech HUB</h4>
+                        <p class="text-xs text-slate-500 mt-1">Servis · sejak 2023</p>
+                    </div>
+                    <div class="glass glass-hover foto-card foto-kanan p-5" style="--foto:url('./assets/img/dwix-labs.jpg')">
+                        <span class="w-10 h-10 rounded-xl bg-lime-100 text-lime-700 grid place-items-center"><i class="fa-solid fa-microchip"></i></span>
+                        <h4 class="font-extrabold text-emerald-950 mt-3">DWIX Labs</h4>
+                        <p class="text-xs text-slate-500 mt-1">IoT &amp; web development · sejak 2026</p>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <h3 class="font-bold mb-3 flex items-center gap-2 text-emerald-950"><i class="fa-solid fa-rocket text-emerald-600"></i> Aplikasi Buatanku</h3>
+                <div class="grid md:grid-cols-3 gap-4">
+                    <a href="#dashboard" data-nav="dashboard" class="glass glass-hover foto-card foto-diag p-5 block" style="--foto:url('./assets/img/musa-perpus.jpg')">
+                        <span class="w-11 h-11 rounded-2xl bg-emerald-100 text-emerald-700 grid place-items-center text-lg"><i class="fa-solid fa-book-open"></i></span>
+                        <h4 class="font-extrabold text-emerald-950 mt-3">MUSA PERPUS</h4>
+                        <p class="text-xs text-slate-500 mt-1 leading-relaxed">Sistem perpustakaan SMK Muhammadiyah 1 Pringsewu: inventaris, peminjaman, scan barcode &amp; kartu pelajar, pengajuan buku, dan cetak label punggung.</p>
+                        <div class="flex flex-wrap gap-1.5 mt-3"><span class="badge b-ok">Web</span><span class="badge b-info">Supabase</span><span class="ml-auto text-xs font-bold text-emerald-700">Buka <i class="fa-solid fa-arrow-right"></i></span></div>
+                    </a>
+                    <a href="https://adwingroup.vercel.app" target="_blank" rel="noopener" class="glass glass-hover foto-card foto-diag p-5 block" style="--foto:url('./assets/img/adwin-group.jpg')">
+                        <span class="w-11 h-11 rounded-2xl bg-amber-100 text-amber-700 grid place-items-center text-lg"><i class="fa-solid fa-globe"></i></span>
+                        <h4 class="font-extrabold text-emerald-950 mt-3">Website ADWIN GROUP</h4>
+                        <p class="text-xs text-slate-500 mt-1 leading-relaxed">Portofolio bertema hitam-emas dengan animasi kursor kolaborasi, pratinjau tautan, dan chatbot ADWIN AI.</p>
+                        <div class="flex flex-wrap gap-1.5 mt-3"><span class="badge b-ok">Web</span><span class="badge b-info">Portofolio</span><span class="ml-auto text-xs font-bold text-emerald-700">Buka <i class="fa-solid fa-arrow-up-right-from-square"></i></span></div>
+                    </a>
+                    <a href="https://dawapps.vercel.app" target="_blank" rel="noopener" class="glass glass-hover foto-card foto-diag p-5 block" style="--foto:url('./assets/img/mochidasai.jpg')">
+                        <span class="w-11 h-11 rounded-2xl bg-lime-100 text-lime-700 grid place-items-center text-lg"><i class="fa-solid fa-face-smile"></i></span>
+                        <h4 class="font-extrabold text-emerald-950 mt-3">Mochidasai</h4>
+                        <p class="text-xs text-slate-500 mt-1 leading-relaxed">Perangkat mungil berbasis ESP32-C3 dengan layar OLED: wajah mochi beranimasi, menu, jam digital, mode repeater WiFi, dan Bluetooth.</p>
+                        <div class="flex flex-wrap gap-1.5 mt-3"><span class="badge b-warn">IoT</span><span class="badge b-info">Arduino</span><span class="ml-auto text-xs font-bold text-emerald-700">Buka <i class="fa-solid fa-arrow-up-right-from-square"></i></span></div>
+                    </a>
+                </div>
+            </div>
+
+            <div class="flex justify-center">
+                <a href="#dashboard" data-nav="dashboard" class="btn btn-ghost"><i class="fa-solid fa-arrow-left"></i> Kembali ke Dashboard</a>
+            </div>
+        </section>
     </main>
 
-    <footer class="text-center text-xs text-slate-500 py-8">© 2026 Dibuat oleh Adam Winatra (Developer)</footer>
+    <footer class="text-center text-xs text-slate-500 py-8">© 2026 Dibuat oleh <a href="#tentang" data-nav="tentang" class="font-semibold text-emerald-700 hover:underline">Adam Winatra (Developer)</a></footer>
 
     <!-- ================= MODAL LOGIN ================= -->
     <div id="loginModal" class="modal-wrap">

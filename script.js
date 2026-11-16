@@ -210,7 +210,7 @@ function animateCount(el, to, from = 0, dur = 1200) {
 }
 
 // ==================== NAVIGASI ====================
-const PAGES = ['dashboard', 'inventaris', 'peminjaman', 'pengajuan', 'populer', 'siswa', 'cetak'];
+const PAGES = ['dashboard', 'inventaris', 'peminjaman', 'pengajuan', 'populer', 'siswa', 'cetak', 'tentang'];
 function showPage(name) {
     if (!PAGES.includes(name)) name = 'dashboard';
     PAGES.forEach(p => {
@@ -676,12 +676,20 @@ async function ambilSemua(src) {
 }
 
 // ==================== PEMINJAMAN ====================
+// Urutan tabel: tanggal pinjam TERBARU di nomor 1 -> terlama. Tanggal sama: data yang lebih baru dimasukkan di atas.
+// Tanggal tidak terbaca ditaruh paling bawah.
+function urutPeminjaman(arr) {
+    return arr.map(p => ({ p, t: normTgl(p.tgl_pinjam) || '' }))
+        .sort((a, b) => (a.t === b.t ? 0 : !a.t ? 1 : !b.t ? -1 : a.t < b.t ? 1 : -1) || (b.p.id - a.p.id))
+        .map(x => x.p);
+}
+
 async function loadPeminjaman() {
     // Publik membaca VIEW yang namanya sudah disingkat di server; admin membaca tabel asli.
     const src = state.isAdmin ? 'peminjaman' : 'peminjaman_publik';
     const { data, error } = await ambilSemua(src);
     if (error) { dbError(error, 'Gagal memuat peminjaman'); return; }
-    state.pm = data || [];
+    state.pm = urutPeminjaman(data || []);
     renderPeminjaman(); renderStats(); renderRecent(); renderKelasStats(); renderTelat(); document.dispatchEvent(new Event('data:pm'));
 }
 
@@ -979,7 +987,7 @@ $('pm-file').addEventListener('change', async (e) => {
     if (!file || !state.isAdmin) return;
     try {
         const rows = await bacaExcelRows(file);
-        const out = []; let lewat = 0;
+        let out = []; let lewat = 0, tanpaTgl = 0;
         rows.forEach(o => {
             const nama = bersih(pick(o, 'NAMAPEMINJAM', 'NAMA'), 100);
             const judul = bersih(pick(o, 'JUDULBUKU', 'JUDUL'), 250);
@@ -988,14 +996,24 @@ $('pm-file').addEventListener('change', async (e) => {
                 nama, judul,
                 kelas: bersih(pick(o, 'KELASGURU', 'KELAS'), 60),
                 jumlah: Math.min(50, Math.max(1, parseInt(pick(o, 'JUMLAHBUKU', 'JUMLAH'), 10) || 1)),
-                tgl_pinjam: parseTanggal(pick(o, 'TANGGALPINJAM')) || todayISO(),
+                tgl_pinjam: parseTanggal(pick(o, 'TANGGALPINJAM')) || (tanpaTgl++, todayISO()),
                 tgl_kembali: parseTanggal(pick(o, 'TANGGALKEMBALI')),
                 no_buku: bersih(pick(o, 'NOBUKU'), 60),
                 catatan: bersih(pick(o, 'CATATAN'), 200)
             });
         });
         if (!out.length) return toast('Tidak ada baris valid (butuh kolom NAMA PEMINJAM & JUDUL BUKU)', 'err', 5000);
-        if (!confirm(`Tambahkan ${fmt(out.length)} data peminjaman ke database?` + (lewat ? `\n(${lewat} baris kosong dilewati)` : ''))) return;
+        // ---- ARAH URUTAN (satu arah, jelas): TERBARU -> TERLAMA, sama seperti tabel & hasil Export ----
+        // Arah file dibaca dari tanggalnya: tanggal baris pertama lebih baru/sama dari baris terakhir -> file "terbaru di atas".
+        // Bila file "terlama di atas" (kronologis), urutan dibalik. Tanggal sama: urutan di dalam hari mengikuti arah file.
+        const baruDiAtas = !(out[0].tgl_pinjam < out[out.length - 1].tgl_pinjam);
+        const urut = out.map((o, i) => ({ o, i })).sort((a, b) =>
+            (a.o.tgl_pinjam < b.o.tgl_pinjam ? 1 : a.o.tgl_pinjam > b.o.tgl_pinjam ? -1 : 0) || (baruDiAtas ? a.i - b.i : b.i - a.i));
+        out = urut.map(x => x.o).reverse();      // simpan dari yang TERLAMA -> id terbesar = data terbaru -> tampil di nomor 1
+        if (!confirm(`Tambahkan ${fmt(out.length)} data peminjaman ke database?\n`
+            + `Dibaca: baris paling atas file = ${baruDiAtas ? 'TERBARU' : 'TERLAMA'}. Hasil di tabel: tanggal terbaru di nomor 1.`
+            + (tanpaTgl ? `\n(${tanpaTgl} baris tanpa tanggal pinjam memakai tanggal hari ini)` : '')
+            + (lewat ? `\n(${lewat} baris kosong dilewati)` : ''))) return;
         await insertBatches(out, 500, 'peminjaman');
         toast(`Import selesai: ${fmt(out.length)} data peminjaman`, 'ok', 5000);
         await loadPeminjaman();
