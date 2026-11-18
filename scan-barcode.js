@@ -43,6 +43,7 @@
     "9786235223094": "BAHASA INDONESIA XI (NEW COVER)",
     "9786232666924": "BAHASA INDONESIA XI (OLD COVER)",
     "9786238680160": "BAHASA ARAB XII",
+    "9786238680023": "BAHASA ARAB XII",
     "9786231802422": "SENI RUPA X",
     "9786231804365": "SENI MUSIK X",
     "9786233289788": "ASISTEN KEPERAWATAN DAN CAREGIVER XI",
@@ -75,43 +76,55 @@
     "9786232667488": "PROYEK IPAS RUMPUN BISNIS DAN MANAJEMEN X",
     "9786235223346": "DASAR AKL VOLUME 2 X",
     "9786231800125": "DASAR AKL VOLUME 1 X",
-    "204167733": "KEDAI BIANGLALA",
-    "9786028066815": "SERBA-SERBI PROFESI",
-    "9786028150330": "PUZZLE MIMPI",
-    "9786020221120": "YANG TERSIMPAN DI SUDUT HATI",
-    "9786028063425": "BERTENAK PUYUH",
-    "9789797944056": "#FOLLOWERS SERPIHAN RASA DI SOCIAL MEDIA",
-    "9789797805784": "LETTER TO MY DAUGHTER",
-    "9799793527160": "TAMBELO MENITI HARI DI OTTAKWA",
-    "9786022512349": "DALAM LIKU RASA (KUTEMUKAN GERAK INDAH KEHIDUPAN)",
-    "9789797805609": "SAPPORO NO NIJI (PELANGI CINTA DI LANGIT SAPPORO)",
-    "9786349629331": "SANG TIMUR",
-    "9789797944551": "ANGKER",
-    "9786021913673": "LEGENDA DAERAH DI PROVINSI LAMPUNG",
-    "9786020020907": "KUNTILANAK CEMEN",
-    "9789797958695": "AKU TAK MARAH",
     };
     const kamus = new Map(Object.entries(kamusBukuManual).map(([k, v]) => [kunci(k), v]));
 
-    // ---------- Barcode tambahan hasil input lewat layar (disimpan di browser ini) ----------
+    // ---------- Perubahan barcode lewat layar (disimpan di browser ini) ----------
+    // tambahan = barcode baru ATAU judul bawaan yang diubah; hapus = barcode bawaan yang dinonaktifkan.
+    // Keduanya bisa dikelola lewat tombol "Kelola Barcode" tanpa menyentuh file ini.
     const KEY_TAMBAHAN = 'musa_kamus_buku_tambahan';
+    const KEY_HAPUS = 'musa_kamus_buku_hapus';
+    const asli = new Map(Object.entries(kamusBukuManual).map(([k, v]) => [kunci(k), { kode: k, judul: v }]));   // isi file = rujukan "Pulihkan"
+    const kodeAsli = new Map([...asli].map(([k, o]) => [k, o.kode]));
     const tambahan = {};                                  // { "kode asli": "JUDUL" }
+    const hapus = new Set();                              // kunci barcode bawaan yang dihapus
     (function muatTambahan() {
         try {
+            JSON.parse(localStorage.getItem(KEY_HAPUS) || '[]').forEach(k => { hapus.add(k); kamus.delete(k); });
             const t = JSON.parse(localStorage.getItem(KEY_TAMBAHAN) || '{}');
             Object.entries(t).forEach(([k, v]) => {
-                if (!kamus.has(kunci(k)) && typeof v === 'string' && v.trim()) { tambahan[k] = v; kamus.set(kunci(k), v); }
+                if (typeof v === 'string' && v.trim()) { tambahan[k] = v; kamus.set(kunci(k), v); kodeAsli.set(kunci(k), k); }
             });
         } catch (_) { /* localStorage tidak tersedia -> tetap jalan di memori */ }
     })();
-    function simpanTambahan() {
-        try { localStorage.setItem(KEY_TAMBAHAN, JSON.stringify(tambahan)); } catch (_) {}
+    function simpanData() {
+        try {
+            localStorage.setItem(KEY_TAMBAHAN, JSON.stringify(tambahan));
+            localStorage.setItem(KEY_HAPUS, JSON.stringify([...hapus]));
+        } catch (_) {}
     }
-    function daftarkanBarcode(kode, judul) {              // masuk ke kamus aktif + diingat
-        kamusBukuManual[kode] = judul;                    // objek kamus aktif ikut diperbarui
-        kamus.set(kunci(kode), judul);
+    const hapusDariTambahan = (k) => Object.keys(tambahan).forEach(kk => { if (kunci(kk) === k) delete tambahan[kk]; });
+    function daftarkanBarcode(kode, judul) {              // barcode baru / ubah judul -> kamus aktif + diingat
+        const k = kunci(kode);
+        hapusDariTambahan(k); hapus.delete(k);
+        kamusBukuManual[kode] = judul;
+        kamus.set(k, judul); kodeAsli.set(k, kode);
         tambahan[kode] = judul;
-        simpanTambahan();
+        simpanData();
+    }
+    function hapusBarcode(k) {                            // k = kunci barcode
+        hapusDariTambahan(k); kamus.delete(k);
+        if (asli.has(k)) hapus.add(k);                    // bawaan: disembunyikan (bisa dipulihkan)
+        simpanData();
+    }
+    function pulihkanBarcode(k) {                         // kembali ke judul bawaan file
+        hapusDariTambahan(k); hapus.delete(k);
+        const a = asli.get(k); if (a) kamus.set(k, a.judul);
+        simpanData();
+    }
+    function statusBarcode(k) {
+        const diubah = Object.keys(tambahan).some(kk => kunci(kk) === k);
+        return asli.has(k) ? (diubah ? 'diubah' : 'bawaan') : 'tambahan';
     }
 
     function cariBuku(kode) {
@@ -121,6 +134,8 @@
         const it = state.inv.find(i => kunci(i.no_inventaris) === k);   // barcode = nomor inventaris
         return it ? { judul: it.nama } : null;
     }
+
+    window.MusaKamus = { cari: cariBuku, daftarkan: daftarkanBarcode, hapus: (kode) => hapusBarcode(kunci(kode)), pulihkan: (kode) => pulihkanBarcode(kunci(kode)), status: (kode) => statusBarcode(kunci(kode)) };
 
     function init() {
         const card = $('pm-form-card');
@@ -140,11 +155,13 @@
                     <div class="rounded-xl bg-emerald-50 border border-emerald-900/10 px-3 py-2"><b class="text-emerald-800"><i class="fa-solid fa-id-card"></i> 3–10 digit</b> = kartu pelajar (NIS/NISN) → <b>Nama &amp; Kelas</b> terisi otomatis</div>
                     <div class="rounded-xl bg-emerald-50 border border-emerald-900/10 px-3 py-2"><b class="text-emerald-800"><i class="fa-solid fa-book"></i> 11 digit ke atas</b> = barcode buku → <b>No Buku &amp; Judul</b> terisi otomatis</div>
                 </div>
+                <button id="scan-koreksi" type="button" class="text-xs font-semibold text-amber-700 hover:underline mt-1 hidden"><i class="fa-solid fa-pen"></i> Judul tidak sesuai dengan barcode? Ubah di sini</button>
                 <div class="flex flex-wrap items-center gap-3 mt-3">
                     <button id="scan-kamera" type="button" class="btn btn-primary btn-sm"><i class="fa-solid fa-camera"></i> Scan dengan Kamera</button>
+                    <button id="scan-kelola" type="button" class="btn btn-ghost btn-sm"><i class="fa-solid fa-pen-to-square"></i> Kelola Barcode</button>
                     <span class="text-[11px] text-slate-500">Scan kartu pelajar dulu, lalu scan buku, lalu simpan.</span>
                 </div>
-                <button id="scan-salin" type="button" class="text-xs font-semibold text-emerald-700 hover:underline mt-2 hidden"><i class="fa-regular fa-copy"></i> Salin <span id="scan-n">0</span> barcode tambahan (untuk ditempel ke kamusBukuManual)</button>
+                <button id="scan-salin" type="button" class="text-xs font-semibold text-emerald-700 hover:underline mt-2 hidden"><i class="fa-regular fa-copy"></i> Salin <span id="scan-n">0</span> perubahan barcode (tempel ke kamusBukuManual agar permanen di semua perangkat)</button>
             </div>`;
         card.parentNode.insertBefore(wrap, card);
 
@@ -215,11 +232,101 @@
             el.className = 'text-xs mt-2 ' + (tipe === 'ok' ? 'text-emerald-700 font-semibold' : tipe === 'warn' ? 'text-amber-600 font-semibold' : 'text-slate-500');
         };
         const segarkanSalin = () => {
-            const n = Object.keys(tambahan).length;
+            const n = Object.keys(tambahan).length + hapus.size;
             $('scan-n').textContent = n;
             $('scan-salin').classList.toggle('hidden', n === 0);
         };
         segarkanSalin();
+
+        // ---------- Kelola barcode buku: ubah judul / hapus / pulihkan / tambah ----------
+        const kl = document.createElement('div');
+        kl.id = 'kl-modal'; kl.className = 'modal-wrap'; kl.style.zIndex = '128';
+        kl.innerHTML = `
+            <div class="modal-card glass max-w-2xl p-5 sm:p-6">
+                <div class="flex items-center justify-between mb-2">
+                    <h3 class="text-lg font-extrabold text-emerald-950 flex items-center gap-2"><i class="fa-solid fa-barcode text-emerald-600"></i> Kelola Barcode Buku</h3>
+                    <button data-close="kl-modal" class="text-slate-400 hover:text-emerald-900" aria-label="Tutup"><i class="fa-solid fa-xmark text-xl"></i></button>
+                </div>
+                <p class="text-xs text-slate-500 mb-3">Barcode tidak sesuai dengan judul? Ubah judulnya di sini, langsung dipakai saat scan berikutnya.</p>
+                <div class="grid grid-cols-1 sm:grid-cols-[10rem_1fr_auto] gap-2 mb-3 p-3 rounded-xl bg-emerald-50 border border-emerald-900/10">
+                    <input id="kl-kode" class="field font-mono" placeholder="Kode barcode" autocomplete="off">
+                    <input id="kl-baru" class="field" placeholder="Judul buku" maxlength="250" autocomplete="off">
+                    <button id="kl-tambah" type="button" class="btn btn-primary btn-sm"><i class="fa-solid fa-plus"></i> Tambah</button>
+                </div>
+                <div class="flex flex-wrap items-center gap-2 mb-2">
+                    <input id="kl-cari" class="field flex-1 min-w-[180px]" placeholder="Cari kode atau judul…" autocomplete="off">
+                    <div class="seg" id="kl-seg"><button type="button" data-t="semua" class="on">Semua</button><button type="button" data-t="ubah">Diubah/Baru</button><button type="button" data-t="hapus">Dihapus</button></div>
+                </div>
+                <div id="kl-info" class="text-[11px] text-slate-500 mb-1"></div>
+                <div id="kl-list" class="max-h-[50vh] overflow-auto"></div>
+            </div>`;
+        document.body.appendChild(kl);
+
+        let klTab = 'semua', kodeTerakhir = '';
+        const klBadge = { bawaan: '<span class="badge b-info">Bawaan</span>', diubah: '<span class="badge b-warn">Diubah</span>', tambahan: '<span class="badge b-ok">Baru</span>', hapus: '<span class="badge b-bad">Dihapus</span>' };
+        function renderKelola() {
+            const q = $('kl-cari').value.trim().toLowerCase();
+            let rows = klTab === 'hapus'
+                ? [...hapus].map(k => ({ k, kode: (asli.get(k) || {}).kode || k, judul: (asli.get(k) || {}).judul || '', st: 'hapus' }))
+                : [...kamus].map(([k, j]) => ({ k, kode: kodeAsli.get(k) || k, judul: j, st: statusBarcode(k) }));
+            if (klTab === 'ubah') rows = rows.filter(r => r.st !== 'bawaan');
+            if (q) rows = rows.filter(r => r.kode.toLowerCase().includes(q) || r.judul.toLowerCase().includes(q));
+            rows.sort((a, b) => ((a.st === 'bawaan') - (b.st === 'bawaan')) || a.judul.localeCompare(b.judul));
+            $('kl-info').textContent = `${rows.length} barcode${rows.length > 60 ? ' · menampilkan 60 pertama, gunakan pencarian' : ''}`;
+            $('kl-list').innerHTML = rows.slice(0, 60).map(r => `
+                <div class="grid grid-cols-1 sm:grid-cols-[10rem_1fr_auto] gap-2 items-center py-2 border-t border-emerald-900/10" data-k="${esc(r.k)}">
+                    <div class="font-mono text-xs break-all">${esc(r.kode)}</div>
+                    ${r.st === 'hapus' ? `<div class="text-sm text-slate-500 line-through break-words">${esc(r.judul)}</div>`
+                        : `<input class="field kl-judul" maxlength="250" value="${esc(r.judul)}">`}
+                    <div class="flex flex-wrap items-center gap-2">${klBadge[r.st]}
+                        ${r.st === 'hapus' ? '<button type="button" data-a="pulih" class="btn btn-green btn-sm">Pulihkan</button>'
+                            : `<button type="button" data-a="simpan" class="btn btn-primary btn-sm">Simpan</button>
+                               ${r.st === 'diubah' ? '<button type="button" data-a="pulih" class="btn btn-ghost btn-sm" title="Kembalikan ke judul bawaan">Pulihkan</button>' : ''}
+                               <button type="button" data-a="hapus" class="btn btn-red btn-sm" title="Hapus barcode"><i class="fa-solid fa-trash"></i></button>`}
+                    </div>
+                </div>`).join('') || '<p class="text-sm text-slate-500 py-6 text-center">Tidak ada barcode yang cocok.</p>';
+        }
+        function bukaKelola(kode) {
+            $('kl-cari').value = kode || ''; klTab = 'semua';
+            document.querySelectorAll('#kl-seg button').forEach(b => b.classList.toggle('on', b.dataset.t === 'semua'));
+            renderKelola(); openModal('kl-modal');
+            setTimeout(() => $('kl-cari').focus(), 80);
+        }
+        $('kl-cari').addEventListener('input', renderKelola);
+        $('kl-seg').addEventListener('click', (e) => {
+            const b = e.target.closest('[data-t]'); if (!b) return;
+            klTab = b.dataset.t;
+            document.querySelectorAll('#kl-seg button').forEach(x => x.classList.toggle('on', x === b));
+            renderKelola();
+        });
+        $('kl-list').addEventListener('click', (e) => {
+            const b = e.target.closest('[data-a]'); if (!b) return;
+            const row = b.closest('[data-k]'), k = row.dataset.k, aksi = b.dataset.a;
+            if (aksi === 'simpan') {
+                const j = row.querySelector('.kl-judul').value.trim().replace(/\s+/g, ' ').toUpperCase();
+                if (!j) return toast('Judul tidak boleh kosong', 'err');
+                if (asli.has(k) && asli.get(k).judul === j) pulihkanBarcode(k);          // sama dengan bawaan -> bukan "diubah"
+                else daftarkanBarcode(kodeAsli.get(k) || k, j);
+                toast('Judul diperbarui', 'ok');
+            } else if (aksi === 'hapus') {
+                if (!confirm('Hapus barcode ini dari daftar?\nBarcode bawaan masih bisa dipulihkan lewat tab "Dihapus".')) return;
+                hapusBarcode(k); toast('Barcode dihapus', 'ok');
+            } else if (aksi === 'pulih') { pulihkanBarcode(k); toast('Barcode dipulihkan', 'ok'); }
+            segarkanSalin(); renderKelola();
+        });
+        $('kl-tambah').addEventListener('click', () => {
+            const kode = $('kl-kode').value.trim(), j = $('kl-baru').value.trim().replace(/\s+/g, ' ').toUpperCase();
+            if (!kunci(kode) || !j) return toast('Kode barcode dan judul wajib diisi', 'err');
+            const ada = kamus.has(kunci(kode));
+            daftarkanBarcode(kode, j); segarkanSalin();
+            $('kl-kode').value = ''; $('kl-baru').value = '';
+            toast(ada ? 'Judul barcode diperbarui' : 'Barcode ditambahkan', 'ok'); renderKelola();
+        });
+        new MutationObserver(() => { if (!kl.classList.contains('open') && modeScan()) fokus(); })
+            .observe(kl, { attributes: true, attributeFilter: ['class'] });
+        $('scan-kelola').addEventListener('click', () => bukaKelola(''));
+        $('scan-koreksi').addEventListener('click', () => bukaKelola(kodeTerakhir));
+        const tampilKoreksi = (kode) => { kodeTerakhir = kode || ''; $('scan-koreksi').classList.toggle('hidden', !kode); };
 
         function setMode(scan) {
             scanCard.classList.toggle('hidden', !scan);
@@ -242,6 +349,7 @@
             $('pm-nobuku').value = kode;
             $('pm-tgl').value = todayDMY();
             $('pm-judul').value = judul;
+            tampilKoreksi(kode);
             const pinjam = state.pm.find(p => !sudahKembali(p) && kunci(p.no_buku) === kunci(kode));
             if (pinjam) status(`${pesanAwal}${judul} — perhatian: masih tercatat dipinjam ${namaTampil(pinjam.nama)}`, 'warn');
             else status(`${pesanAwal}${judul}`, 'ok');
@@ -288,7 +396,8 @@
         }).observe(modal, { attributes: true, attributeFilter: ['class'] });
 
         $('scan-salin').addEventListener('click', async () => {
-            const teks = Object.entries(tambahan).map(([k, v]) => `    ${JSON.stringify(k)}: ${JSON.stringify(v)},`).join('\n');
+            const teks = Object.entries(tambahan).map(([k, v]) => `    ${JSON.stringify(k)}: ${JSON.stringify(v)},`).join('\n')
+                + (hapus.size ? '\n// Barcode yang dihapus (buang dari kamusBukuManual): ' + [...hapus].map(k => (asli.get(k) || {}).kode || k).join(', ') : '');
             try { await navigator.clipboard.writeText(teks); toast('Daftar barcode tambahan disalin', 'ok'); }
             catch (_) { window.prompt('Salin teks ini lalu tempel ke kamusBukuManual:', teks); }
         });
@@ -415,6 +524,7 @@
             if (!modeScan()) return;
             $('pm-tgl').value = todayDMY();
             status('Menunggu scan…');
+            tampilKoreksi(null);
             fokus();
         });
     }
